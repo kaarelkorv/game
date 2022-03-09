@@ -1,0 +1,48 @@
+body {
+    background-color: grey;
+}
+.container {
+    min-width: 1200px;
+    min-height: 800px;
+    border: 2px solid rgb(255, 255, 255);
+    display: flex;
+}
+
+.gameInfo {
+    color: white;
+    font-size: 3rem;
+    margin: 3rem 0;
+    min-width: 200px;
+}
+
+.gameWindow {
+    background-color: white;
+    height: 600px;
+    width: 1200px;
+    margin: 3rem auto;
+    position: relative;
+}
+
+.user {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    background-color: rgb(176, 139, 190);
+    position: absolute;
+    bottom: 1%;
+    left: calc(50% - 20px);
+}
+
+.bullet {
+    height: 10px;
+    width: 10px;
+    background-color: black;
+    position: absolute;
+}
+
+.alien {
+    height: 50px;
+    width: 50px;
+    background-color: rgb(184, 53, 53);
+    position: absolute;
+}
