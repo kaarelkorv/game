@@ -10,6 +10,23 @@ let playTime
 let startTime
 let pauseDuration = 0
 let pauseStart
+let aliensDirection = true
+let canChangeDirection = false
+
+setInterval(() => {
+        canChangeDirection = true
+}, 3000)
+
+//Aliens direction changer
+function alienDirectionChanger() {
+    if (canChangeDirection && aliensDirection) {
+        aliensDirection = false
+        canChangeDirection = false
+    } else if (canChangeDirection && !aliensDirection) {
+        aliensDirection = true
+        canChangeDirection = false
+    }
+}
 
 const score = document.querySelector('.score')
 const timeCounter = document.querySelector('.timeCounter')
@@ -21,21 +38,20 @@ document.addEventListener('keydown', (keyEvent) => gameOff(keyEvent))
 
 //Create multiple aliens
 function createAliens() {
-    for (let i=0;i<alienRows;i++) {
-        for (let j=0;j<alienCount/alienRows;j++) {
-        createAlien(i, j)
+    for (let i = 0; i < alienRows; i++) {
+        for (let j = 0; j < alienCount/alienRows; j++) {
+            createAlien(i, j)
+        }
     }
-    }
-
 }
 
 
-//Create alien
+//Create one alien
 function createAlien(row, col) {
     const alien = document.createElement('div')
     alien.classList.add('alien')
     alien.style.bottom = 300 + row*60 +'px'
-    alien.style.left = 250 + col*60 +'px'
+    alien.style.left = 350 + col*60 +'px'
     gameWindow.appendChild(alien)
 }
 
@@ -57,7 +73,6 @@ function createBullet() {
 //Move bullets
 function moveBullets() {
     let bullets = document.querySelectorAll('.bullet')
-    let bulletPosition
     let currentPostition
     bullets.forEach(bullet => {
         currentPostition = Number(bullet.style.bottom.replace('px', ''))
@@ -66,6 +81,21 @@ function moveBullets() {
         }
         checkCollisions()
         bullet.style.bottom = currentPostition + 15 + 'px'
+    })
+}
+
+//Move aliens
+function moveAliens() {
+    let aliens = document.querySelectorAll('.alien, .exploding')
+    let currentAlienPostition
+    aliens.forEach(alien => {
+        currentAlienPostition = Number(alien.style.left.replace('px', ''))
+        if (aliensDirection) {
+            alien.style.left = currentAlienPostition - 1 + 'px'  
+        } else {
+            alien.style.left = currentAlienPostition + 1 + 'px'  
+        }
+        
     })
 }
 
@@ -228,11 +258,15 @@ function drawFrame(timeStamp){
     // }
 
     executeMoves()
+    alienDirectionChanger()
+    moveAliens()
     moveBullets()
     playTime = new Date().getTime() - startTime - pauseDuration
-    timeCounter.textContent = `${30 - Math.floor(playTime/1000)}`
-    if (playTime <= 0) {
-        gameOff()
+    
+    if (30 - Math.floor(playTime/1000) > 0) {
+       timeCounter.textContent = `${30 - Math.floor(playTime/1000)}` 
+    } else {
+        timeCounter.textContent = `game over` 
     }
     
 
@@ -258,12 +292,12 @@ function gameOff(event) {
             pauseDuration += currentPauseDuration
 
         }
-
     }
 }
 
 
 //starts gameloop
 createAliens()
+alienDirectionChanger()
 startTime = new Date().getTime()
 drawFrame()

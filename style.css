@@ -50,6 +50,9 @@ body {
 .exploding {
     height: 50px;
     width: 50px;
-    background-image: radial-gradient(red, yellow);
+    border-radius: 50%;
+    box-shadow: 0px 0px 10px 5px rgb(255, 0, 0);
+    background-image: radial-gradient(rgb(255, 251, 0), red);
+    transition: 300ms ease;
     position: absolute;
 }
