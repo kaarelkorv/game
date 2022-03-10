@@ -3,7 +3,7 @@ let gameOn
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
-const alienCount = 36
+const alienCount = 40
 const alienRows = 4
 let score = document.querySelector('.score')
 let scoreCount = 0
@@ -14,6 +14,8 @@ const user = document.querySelector('.user')
 
 document.addEventListener('keydown', (keyEvent) => gameOff(keyEvent))
 
+
+//Create multiple aliens
 function createAliens() {
     for (let i=0;i<alienRows;i++) {
         for (let j=0;j<alienCount/alienRows;j++) {
@@ -24,8 +26,7 @@ function createAliens() {
 }
 
 
-
-//create Alien
+//Create alien
 function createAlien(row, col) {
     const alien = document.createElement('div')
     alien.classList.add('alien')
@@ -35,7 +36,7 @@ function createAlien(row, col) {
 }
 
 
-//create new bullet
+//Create new bullet
 function createBullet() {
     const bullet = document.createElement('div')
     bullet.classList.add('bullet')
@@ -48,23 +49,24 @@ function createBullet() {
     
 }
 
-//move bullets
+
+//Move bullets
 function moveBullets() {
     let bullets = document.querySelectorAll('.bullet')
     let bulletPosition
     let currentPostition
     bullets.forEach(bullet => {
-        bulletPosition = getComputedStyle(bullet)
-        currentPostition = bulletPosition.getPropertyValue('bottom').replace('px', '')
-        if (currentPostition > 650) {
+        currentPostition = Number(bullet.style.bottom.replace('px', ''))
+        if (currentPostition > 565) {
             bullet.remove()
         }
         checkCollisions()
-        bullet.style.bottom = Number(currentPostition) + 15 + 'px'
+        bullet.style.bottom = currentPostition + 15 + 'px'
     })
 }
 
-//checkCollisions
+
+//Check collisions
 function checkCollisions() {
     let bullets = document.querySelectorAll('.bullet')
     let aliens = document.querySelectorAll('.alien')
@@ -100,7 +102,10 @@ function checkCollisions() {
                 if (scoreCount === alienCount) {
                     setTimeout(()=> {
                     gameOff()
-                    alert("You win!!!")  
+                    Object.keys(controller).forEach(key => {
+                        controller[key].pressed = false
+                    })  
+                    alert("You win!!!")
                     }, 500)
                     
                 }
@@ -110,9 +115,7 @@ function checkCollisions() {
 }
 
 
-
-
-//controller TODO: add start and pause!!
+//Controller TODO: add start and pause!!
 let controller = {
     'ArrowLeft': {
         pressed: false,
@@ -136,7 +139,8 @@ let controller = {
     },
 }
 
-//eventlisteners for controller keys
+
+//Eventlisteners for controller keys
 document.addEventListener("keydown", (e) => {
     if(controller[e.key]){
       controller[e.key].pressed = true
@@ -157,8 +161,8 @@ function executeMoves() {
     })
 }
 
-//---Controller functions---
 
+//---Controller functions
 function moveLeft() {
     let userStyles = window.getComputedStyle(user)
     let leftValue = Number(userStyles.getPropertyValue('left').replace('px', ''))
@@ -194,7 +198,8 @@ function moveDown() {
     //user.style.transform = 'translateY(3px)'
 }
 
-//---Shooting speed regulator---
+
+//---shooting speed regulator---
 let timer = true
 function shoot(){
     if (timer) {
@@ -207,9 +212,9 @@ function shoot(){
 }
 
 
-//---Main loop---
+//---main loop---
 function drawFrame(timeStamp){
-//measures and logs time between framews
+    //measures and logs time between frames
     // if (timeStamp) {
     //     let timeDifference = timeStamp - prevFrameTimeStamp
     //     if (timeDifference*60 < 1000) {
@@ -228,14 +233,20 @@ function drawFrame(timeStamp){
 }
 
 
-
 //stops game (stops new frames being drawn)
+let paused = false
 function gameOff(event) {
     if (event && event.key === 'p') {
-        cancelAnimationFrame(gameOn)
+        if (!paused) {
+            cancelAnimationFrame(gameOn)
+            paused = true
+        } else {
+            drawFrame()
+            paused = false
+        }
+
     }
 }
-
 
 
 //starts gameloop
