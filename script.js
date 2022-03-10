@@ -14,7 +14,8 @@ let aliensDirection = true // aliens moving left or right
 let canChangeDirection = false //time of aliens movement from one side to other
 let alienSwing //aliengroup moving back and forth
 let alienShoot // bottom row of aliens shooting
-const gameTime = 20 // time in seconds
+const gameTime = 40 // time in seconds
+const alienBulletSpeed = 8
 
 
 //Set frame independent intervals:
@@ -27,7 +28,7 @@ function setIntervals() {
     //Aliengroup shooting interval
     alienShoot = setInterval(() => {
         createAlienBullet()
-    }, 2000)
+    }, 500)
 }
 
 //Clear frame independent intervals
@@ -95,7 +96,7 @@ function createBullet() {
 
 //Select shooting alien(s)
 function selectShootingAlien() {
-    let lowestAliens = document.querySelectorAll('.row-0')
+    let lowestAliens = document.querySelectorAll('.alien')
     let random = Math.floor(Math.random()*lowestAliens.length)
     return lowestAliens[random]
 }
@@ -142,7 +143,7 @@ function moveBullets() {
             },300)
         } else {
             checkCollisions()
-            alienBullet.style.bottom = currentABPostition - 5 + 'px'
+            alienBullet.style.bottom = currentABPostition - alienBulletSpeed + 'px'
         }
 
     })
@@ -192,7 +193,7 @@ function checkCollisions() {
                         alien.remove()    
                     }, 500)
                 scoreCount++
-                score.innerHTML = `${scoreCount}`
+                score.innerHTML = `score ${scoreCount}`
                 // check for WIN
                 if (scoreCount === alienCount) {
                     setTimeout(()=> {
@@ -335,7 +336,7 @@ function shoot(){
        timer = false
        setTimeout(()=> {
            timer = true
-       }, 100) 
+       }, 400) 
     }
 }
 
@@ -407,10 +408,11 @@ function gameEnd(status) {
 
     switch (status) {
         case 'win':
-            
             document.querySelector('.win-text').style.display = "block"
+            break
         case 'lose':
             document.querySelector('.lose-text').style.display = "block"
+            break
     }
 
 }
