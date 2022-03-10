@@ -5,10 +5,14 @@ const gameHight = 600
 const step = 5
 const alienCount = 40
 const alienRows = 4
-let score = document.querySelector('.score')
 let scoreCount = 0
+let playTime
+let startTime
+let pauseDuration = 0
+let pauseStart
 
-
+const score = document.querySelector('.score')
+const timeCounter = document.querySelector('.timeCounter')
 const gameWindow = document.querySelector('.gameWindow')
 const user = document.querySelector('.user')
 
@@ -225,6 +229,11 @@ function drawFrame(timeStamp){
 
     executeMoves()
     moveBullets()
+    playTime = new Date().getTime() - startTime - pauseDuration
+    timeCounter.textContent = `${30 - Math.floor(playTime/1000)}`
+    if (playTime <= 0) {
+        gameOff()
+    }
     
 
 
@@ -235,14 +244,19 @@ function drawFrame(timeStamp){
 
 //stops game (stops new frames being drawn)
 let paused = false
+
 function gameOff(event) {
     if (event && event.key === 'p') {
         if (!paused) {
             cancelAnimationFrame(gameOn)
             paused = true
+            pauseStart = new Date().getTime()
         } else {
             drawFrame()
             paused = false
+            currentPauseDuration = new Date().getTime() - pauseStart
+            pauseDuration += currentPauseDuration
+
         }
 
     }
@@ -251,4 +265,5 @@ function gameOff(event) {
 
 //starts gameloop
 createAliens()
+startTime = new Date().getTime()
 drawFrame()
