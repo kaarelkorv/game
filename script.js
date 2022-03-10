@@ -9,13 +9,34 @@ let scoreCount = 0
 let playTime
 let startTime
 let pauseDuration = 0
-let pauseStart
-let aliensDirection = true
-let canChangeDirection = false
+let pauseStart //marks the time when "p" was last hit
+let aliensDirection = true // aliens moving left or right
+let canChangeDirection = false //time of aliens movement from one side to other
+let alienSwing //aliengroup moving back and forth
+let alienShoot // bottom row of aliens shooting
+const gameTime = 20 // time in seconds
 
-setInterval(() => {
+
+//Set frame independent intervals:
+function setIntervals() {
+    //Aliengroup direction change
+    alienSwing = setInterval(() => {
         canChangeDirection = true
-}, 3000)
+    }, 3000)
+
+    //Aliengroup shooting interval
+    alienShoot = setInterval(() => {
+        createAlienBullet()
+    }, 2000)
+}
+
+//Clear frame independent intervals
+function clearIntervals() {
+    clearInterval(alienSwing)
+    clearInterval(alienShoot)
+
+}
+    
 
 //Aliens direction changer
 function alienDirectionChanger() {
@@ -30,10 +51,12 @@ function alienDirectionChanger() {
 
 const score = document.querySelector('.score')
 const timeCounter = document.querySelector('.timeCounter')
-const gameWindow = document.querySelector('.gameWindow')
+let gameWindow = document.querySelector('.gameWindow')
 const user = document.querySelector('.user')
 
-document.addEventListener('keydown', (keyEvent) => gameOff(keyEvent))
+document.addEventListener('keydown', (keyEvent) => {
+gamePause(keyEvent)
+})
 
 
 //Create multiple aliens
@@ -50,6 +73,7 @@ function createAliens() {
 function createAlien(row, col) {
     const alien = document.createElement('div')
     alien.classList.add('alien')
+    alien.classList.add(`row-${row}`)
     alien.style.bottom = 300 + row*60 +'px'
     alien.style.left = 350 + col*60 +'px'
     gameWindow.appendChild(alien)
@@ -69,9 +93,32 @@ function createBullet() {
     
 }
 
+//Select shooting alien(s)
+function selectShootingAlien() {
+    let lowestAliens = document.querySelectorAll('.row-0')
+    let random = Math.floor(Math.random()*lowestAliens.length)
+    return lowestAliens[random]
+}
+
+
+
+//Create new alien bullet
+function createAlienBullet() {
+        const alienBullet = document.createElement('div')
+        alienBullet.classList.add('alien-bullet')
+        let shooter = selectShootingAlien()
+        if (shooter) {
+            alienBullet.style.left = shooter.style.left
+            alienBullet.style.bottom = shooter.style.bottom
+            gameWindow.appendChild(alienBullet) 
+        }
+ 
+}
+
 
 //Move bullets
 function moveBullets() {
+    //move user bullets
     let bullets = document.querySelectorAll('.bullet')
     let currentPostition
     bullets.forEach(bullet => {
@@ -82,7 +129,25 @@ function moveBullets() {
         checkCollisions()
         bullet.style.bottom = currentPostition + 15 + 'px'
     })
+
+    //move alien bullets
+    let alienBullets = document.querySelectorAll('.alien-bullet')
+    let currentABPostition
+    alienBullets.forEach(alienBullet => {
+        currentABPostition = Number(alienBullet.style.bottom.replace('px', ''))
+        if (currentABPostition < 0) {
+            alienBullet.classList.add('hit-user')
+            setTimeout(()=> {
+            alienBullet.remove()   
+            },300)
+        } else {
+            checkCollisions()
+            alienBullet.style.bottom = currentABPostition - 5 + 'px'
+        }
+
+    })
 }
+
 
 //Move aliens
 function moveAliens() {
@@ -102,27 +167,23 @@ function moveAliens() {
 
 //Check collisions
 function checkCollisions() {
+
+    //User bullets VS aliens
     let bullets = document.querySelectorAll('.bullet')
     let aliens = document.querySelectorAll('.alien')
 
     bullets.forEach(bullet => {
         aliens.forEach(alien => {
 
-            // SUPER SLOW
-            // let bulletStyles = getComputedStyle(bullet)
-            // let bulletPositionBottom = Number(bulletStyles.getPropertyValue('bottom').replace('px', ''))
-            // let bulletPositionLeft = Number(bulletStyles.getPropertyValue('left').replace('px', ''))
-            // let alienStyles = getComputedStyle(alien)
-            // let alienPositionBottom = Number(alienStyles.getPropertyValue('bottom').replace('px', ''))
-            // let alienPositionLeft = Number(alienStyles.getPropertyValue('left').replace('px', ''))
-
             let bulletPositionBottom = Number(bullet.style.bottom.replace('px', ''))
             let bulletPositionLeft = Number(bullet.style.left.replace('px', ''))
             let alienPositionBottom = Number(alien.style.bottom.replace('px', ''))
             let alienPositionLeft = Number(alien.style.left.replace('px', ''))
 
-
-            if (bulletPositionLeft > alienPositionLeft && bulletPositionLeft < alienPositionLeft + 50 && bulletPositionBottom > alienPositionBottom && bulletPositionBottom < alienPositionBottom + 50) {
+            if (bulletPositionLeft > alienPositionLeft &&
+                 bulletPositionLeft < alienPositionLeft + 50 &&
+                  bulletPositionBottom > alienPositionBottom &&
+                   bulletPositionBottom < alienPositionBottom + 50) {
                 
                 bullet.remove()
                 alien.classList.remove('alien')
@@ -135,16 +196,49 @@ function checkCollisions() {
                 // check for WIN
                 if (scoreCount === alienCount) {
                     setTimeout(()=> {
-                    gameOff()
                     Object.keys(controller).forEach(key => {
                         controller[key].pressed = false
                     })  
-                    alert("You win!!!")
+                    gameEnd('win')
                     }, 500)
+                return
                     
                 }
             }
         })
+    })
+
+    //Alien bullets VS user
+    let alienBullets = document.querySelectorAll('.alien-bullet')
+
+    alienBullets.forEach(alienBullet => {
+        
+        let alienBulletPositionLeft = Number(alienBullet.style.left.replace('px', ''))
+        let alienBulletPositionBottom = Number(alienBullet.style.bottom.replace('px', ''))
+        let userPositionLeft = Number(user.style.left.replace('px', ''))
+        let userPositionBottom = Number(user.style.bottom.replace('px', ''))
+
+
+            if (alienBulletPositionLeft > userPositionLeft &&
+                 alienBulletPositionLeft < userPositionLeft + 50 &&
+                  alienBulletPositionBottom > userPositionBottom &&
+                   alienBulletPositionBottom < userPositionBottom + 50) {
+                
+                alienBullet.classList.remove('alien-bullet')   
+                alienBullet.classList.add('hit-user')
+                setTimeout(()=> {
+                    alienBullet.remove()
+                },300)
+                if (user.classList.contains('low-health')) {
+                    gameEnd('lose')
+                    user.classList.remove('user')
+                    return
+                } else {
+                    user.classList.add('low-health')
+                }
+                
+            }
+        
     })
 }
 
@@ -248,6 +342,7 @@ function shoot(){
 
 //---main loop---
 function drawFrame(timeStamp){
+    gameOn = requestAnimationFrame(drawFrame)
     //measures and logs time between frames
     // if (timeStamp) {
     //     let timeDifference = timeStamp - prevFrameTimeStamp
@@ -261,32 +356,31 @@ function drawFrame(timeStamp){
     alienDirectionChanger()
     moveAliens()
     moveBullets()
+
     playTime = new Date().getTime() - startTime - pauseDuration
     
-    if (30 - Math.floor(playTime/1000) > 0) {
-       timeCounter.textContent = `${30 - Math.floor(playTime/1000)}` 
+    if (gameTime - Math.floor(playTime/1000) > 0) {
+       timeCounter.textContent = `time left: ${gameTime - Math.floor(playTime/1000)}` 
     } else {
-        timeCounter.textContent = `game over` 
+        timeCounter.textContent = 'time up'
+        gameEnd('lose') 
     }
     
-
-
-
-    gameOn = requestAnimationFrame(drawFrame)
 }
 
 
-//stops game (stops new frames being drawn)
+//pauses game (stops new frames being drawn, halts time)
 let paused = false
-
-function gameOff(event) {
+function gamePause(event) {
     if (event && event.key === 'p') {
         if (!paused) {
             cancelAnimationFrame(gameOn)
+            clearIntervals()
             paused = true
             pauseStart = new Date().getTime()
         } else {
             drawFrame()
+            setIntervals()
             paused = false
             currentPauseDuration = new Date().getTime() - pauseStart
             pauseDuration += currentPauseDuration
@@ -295,9 +389,36 @@ function gameOff(event) {
     }
 }
 
+//Game end (win or lose)
+function gameEnd(status) {
+    console.log("Game ended")
+    
+    clearIntervals()
+    setTimeout(()=>{
+        cancelAnimationFrame(gameOn)   
+    },500)
+
+    user.remove()
+
+    document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(bullet => {
+        bullet.remove()
+    })
+    gameWindow.classList.add('game-end')
+
+    switch (status) {
+        case 'win':
+            
+            document.querySelector('.win-text').style.display = "block"
+        case 'lose':
+            document.querySelector('.lose-text').style.display = "block"
+    }
+
+}
+
 
 //starts gameloop
 createAliens()
 alienDirectionChanger()
 startTime = new Date().getTime()
 drawFrame()
+setIntervals()
