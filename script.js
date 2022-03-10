@@ -187,12 +187,20 @@ function checkCollisions() {
                    bulletPositionBottom < alienPositionBottom + 50) {
                 
                 bullet.remove()
-                alien.classList.remove('alien')
-                alien.classList.add('exploding')
+                if (alien.classList.contains('low-health-alien')) {
+                    alien.classList.remove('alien')
+                    alien.classList.add('exploding')
                     setTimeout(()=> {
                         alien.remove()    
                     }, 500)
-                scoreCount++
+                    scoreCount++
+
+
+
+                } else {
+                  alien.classList.add('low-health-alien')  
+                }
+  
                 score.innerHTML = `score ${scoreCount}`
                 // check for WIN
                 if (scoreCount === alienCount) {
@@ -408,10 +416,10 @@ function gameEnd(status) {
 
     switch (status) {
         case 'win':
-            document.querySelector('.win-text').style.display = "block"
+            document.querySelector('.win-text').style.opacity = "1"
             break
         case 'lose':
-            document.querySelector('.lose-text').style.display = "block"
+            document.querySelector('.lose-text').style.opacity = "1"
             break
     }
 
@@ -420,7 +428,12 @@ function gameEnd(status) {
 
 //starts gameloop
 createAliens()
-alienDirectionChanger()
 startTime = new Date().getTime()
 drawFrame()
-setIntervals()
+setIntervals()  
+
+
+document.querySelector('[data-new-game]').addEventListener('click', ()=>{
+    
+})
+

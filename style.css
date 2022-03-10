@@ -49,6 +49,11 @@ body {
     position: absolute;
 }
 
+.low-health-alien {
+    background-image: linear-gradient(gray, red);
+    background-color: transparent;
+}
+
 .exploding {
     height: 50px;
     width: 50px;
@@ -100,7 +105,13 @@ body {
     font-size: 10rem;
     position: absolute;
     bottom: 20rem;
-    left: 15rem;
-    display: none;
+    left: 13rem;
+    display: flex;
+    flex-direction: column;
     color: white;
+    opacity: 0;
+}
+
+.lose-text button {
+    font-size: 2rem;
 }
