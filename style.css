@@ -27,22 +27,31 @@ body {
     height: 40px;
     width: 40px;
     border-radius: 50%;
-    background-color: rgb(176, 139, 190);
+    background-color: rgb(49, 49, 49);
     position: absolute;
     bottom: 1%;
     left: calc(50% - 20px);
 }
 
 .bullet {
-    height: 10px;
+    height: 20px;
     width: 10px;
-    background-color: black;
+    border-radius: 50% 50% 0 0;
+    background-color: rgb(199, 199, 199);
     position: absolute;
 }
 
 .alien {
     height: 50px;
     width: 50px;
-    background-color: rgb(184, 53, 53);
+    background-color: rgb(104, 104, 104);
     position: absolute;
 }
+
+.exploding {
+    height: 50px;
+    width: 50px;
+    background-image: radial-gradient(red, yellow);
+    position: absolute;
+}
+

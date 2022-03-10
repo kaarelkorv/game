@@ -3,8 +3,8 @@ let gameOn
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
-const alienCount = 3
-const alienRows = 3
+const alienCount = 36
+const alienRows = 4
 let score = document.querySelector('.score')
 let scoreCount = 0
 
@@ -42,8 +42,8 @@ function createBullet() {
     let userPosition = getComputedStyle(user)
     let userBottom = userPosition.getPropertyValue('bottom')
     let userLeft = userPosition.getPropertyValue('left')
-    bullet.style.bottom = userBottom
-    bullet.style.left = userLeft
+    bullet.style.bottom = Number(userBottom.replace('px', '')) + 15 + 'px'
+    bullet.style.left = Number(userLeft.replace('px', '')) + 15 + 'px'
     gameWindow.appendChild(bullet)
     
 }
@@ -87,8 +87,13 @@ function checkCollisions() {
 
 
             if (bulletPositionLeft > alienPositionLeft && bulletPositionLeft < alienPositionLeft + 50 && bulletPositionBottom > alienPositionBottom && bulletPositionBottom < alienPositionBottom + 50) {
-                alien.remove()
+                
                 bullet.remove()
+                alien.classList.remove('alien')
+                alien.classList.add('exploding')
+                    setTimeout(()=> {
+                        alien.remove()    
+                    }, 500)
                 scoreCount++
                 score.innerHTML = `${scoreCount}`
                 // check for WIN
