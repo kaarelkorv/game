@@ -17,6 +17,7 @@ let alienShoot // bottom row of aliens shooting
 let gameTime = 60 // time in seconds
 let alienBulletSpeed = 8
 let level = 0
+let lives = 2
 
 
 //Set frame independent intervals:
@@ -201,7 +202,7 @@ function checkCollisions() {
                   alien.classList.add('low-health-alien')  
                 }
   
-                score.innerHTML = `score ${scoreCount}`
+                score.innerHTML = `SCORE ${scoreCount}`
                 // check for WIN
                 if (scoreCount === alienCount) {
                     // setTimeout(()=> {
@@ -234,10 +235,12 @@ function checkCollisions() {
                 
                 alienBullet.classList.remove('alien-bullet')   
                 alienBullet.classList.add('hit-user')
+                lives--
                 setTimeout(()=> {
                     alienBullet.remove()
                 },300)
                 if (user.classList.contains('low-health')) {
+                    document.querySelector('.lives').style.background = 'red'
                     gameEnd('lose')
                     return
                 } else {
@@ -349,27 +352,35 @@ function shoot(){
 
 //---main loop---
 function drawFrame(timeStamp){
+        if (timeStamp) {
+        let timeDifference = timeStamp - prevFrameTimeStamp
+        if (timeDifference*60 < 1000) {
+            console.log(timeDifference)
+        }
+        prevFrameTimeStamp = timeStamp
+    }
     gameOn = requestAnimationFrame(drawFrame)
     //measures and logs time between frames
-    // if (timeStamp) {
-    //     let timeDifference = timeStamp - prevFrameTimeStamp
-    //     if (timeDifference*60 < 1000) {
-    //         console.log(timeDifference)
-    //     }
-    //     prevFrameTimeStamp = timeStamp
-    // }
+
 
     executeMoves()
     alienDirectionChanger()
     moveAliens()
     moveBullets()
 
+    document.querySelector('.level').innerHTML = `LEVEL ${level}`
+    if (lives === 0) {
+
+    }
+    document.querySelector('.lives').innerHTML = `LIVES ${lives}`
+
     playTime = new Date().getTime() - startTime - pauseDuration
     
     if (gameTime - Math.floor(playTime/1000) > 0) {
-       timeCounter.textContent = `time left: ${gameTime - Math.floor(playTime/1000)}` 
+       timeCounter.textContent = `TIME ${gameTime - Math.floor(playTime/1000)}` 
     } else {
-        timeCounter.textContent = 'time up'
+        timeCounter.textContent = 'TIMES UP'
+        timeCounter.style.background = 'red'
         gameEnd('lose') 
     }
     
@@ -385,12 +396,14 @@ function gamePause(event) {
             clearIntervals()
             paused = true
             pauseStart = new Date().getTime()
+            document.querySelector('.pause-menu').style.opacity = '1'
         } else {
             drawFrame()
             setIntervals()
             paused = false
             currentPauseDuration = new Date().getTime() - pauseStart
             pauseDuration += currentPauseDuration
+            document.querySelector('.pause-menu').style.opacity = '0'
 
         }
     }
@@ -400,7 +413,6 @@ function gamePause(event) {
 function gameEnd(status) {
     console.log("Game ended")
 
-    
     clearIntervals()
     cancelAnimationFrame(gameOn)   
     user.style.opacity = '0'
@@ -425,17 +437,25 @@ function gameEnd(status) {
 //Starts New Game
 function startNewGame(keyEvent) {
     if (keyEvent.key === 'y') {
+        if (paused) {
+            gamePause({key: 'p'})
+        }
+        lives = 2
         document.querySelector('.start-msg').style.opacity = '0'
         gameEnd('lose') // reset
         scoreCount = 0
-        score.innerHTML = `score ${scoreCount}`
-        console.log('!!!!!!!!!!!!!!!!NEW GAME !!!!!!!!!!!!!!')
+        score.innerHTML = `SCORE ${scoreCount}`
+        console.log('NEW GAME')
+        startTime = new Date().getTime()
         user.style.opacity = '1'
         user.classList.remove('low-health')
         createAliens()
-        startTime = new Date().getTime()
+        pauseDuration = 0
         drawFrame()
         setIntervals()
+
+        timeCounter.style.background = 'black'
+        document.querySelector('.lives').style.background = 'black'
 
         gameWindow.classList.remove('game-end')
         let win = document.querySelector('.win-msg')
@@ -447,13 +467,15 @@ function startNewGame(keyEvent) {
 
 //Next level
 function nextLevel(keyEvent) {
-    if (keyEvent.key === 'n') {
-        alienCount += 10
-        alienBulletSpeed +=5
-        gameTime -= 10
+    if (keyEvent.key === 'n' && level < 2) {
+        level++
+        for (let i=0;i<level;i++) {
+        alienCount += 6
+        alienBulletSpeed += 3
+        gameTime -= 5
+        }
         gameEnd('lose')
         startNewGame({key: 'y'})
-        level++
         document.querySelector('.level').innerHTML = `level ${level}`
     }
 
