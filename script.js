@@ -3,7 +3,7 @@ let gameOn
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
-const alienCount = 40
+const alienCount = 4
 const alienRows = 4
 let scoreCount = 0
 let playTime
@@ -14,7 +14,7 @@ let aliensDirection = true // aliens moving left or right
 let canChangeDirection = false //time of aliens movement from one side to other
 let alienSwing //aliengroup moving back and forth
 let alienShoot // bottom row of aliens shooting
-const gameTime = 40 // time in seconds
+const gameTime = 60 // time in seconds
 const alienBulletSpeed = 8
 
 
@@ -28,14 +28,13 @@ function setIntervals() {
     //Aliengroup shooting interval
     alienShoot = setInterval(() => {
         createAlienBullet()
-    }, 500)
+    }, 1000)
 }
 
 //Clear frame independent intervals
 function clearIntervals() {
     clearInterval(alienSwing)
     clearInterval(alienShoot)
-
 }
     
 
@@ -57,6 +56,7 @@ const user = document.querySelector('.user')
 
 document.addEventListener('keydown', (keyEvent) => {
 gamePause(keyEvent)
+startNewGame(keyEvent)
 })
 
 
@@ -128,7 +128,7 @@ function moveBullets() {
             bullet.remove()
         }
         checkCollisions()
-        bullet.style.bottom = currentPostition + 15 + 'px'
+        bullet.style.bottom = currentPostition + 20 + 'px'
     })
 
     //move alien bullets
@@ -204,14 +204,13 @@ function checkCollisions() {
                 score.innerHTML = `score ${scoreCount}`
                 // check for WIN
                 if (scoreCount === alienCount) {
-                    setTimeout(()=> {
-                    Object.keys(controller).forEach(key => {
-                        controller[key].pressed = false
-                    })  
+                    // setTimeout(()=> {
+                    // Object.keys(controller).forEach(key => {
+                    //     controller[key].pressed = false
+                    // })  
                     gameEnd('win')
-                    }, 500)
-                return
-                    
+                    // }, 500)
+                    return
                 }
             }
         })
@@ -240,7 +239,6 @@ function checkCollisions() {
                 },300)
                 if (user.classList.contains('low-health')) {
                     gameEnd('lose')
-                    user.classList.remove('user')
                     return
                 } else {
                     user.classList.add('low-health')
@@ -344,7 +342,7 @@ function shoot(){
        timer = false
        setTimeout(()=> {
            timer = true
-       }, 400) 
+       }, 200) 
     }
 }
 
@@ -401,39 +399,47 @@ function gamePause(event) {
 //Game end (win or lose)
 function gameEnd(status) {
     console.log("Game ended")
+
     
     clearIntervals()
-    setTimeout(()=>{
-        cancelAnimationFrame(gameOn)   
-    },500)
+    cancelAnimationFrame(gameOn)   
+    user.style.opacity = '0'
 
-    user.remove()
-
-    document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(bullet => {
-        bullet.remove()
+    document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(object => {
+        object.remove()
     })
-    gameWindow.classList.add('game-end')
 
+    gameWindow.classList.add('game-end')
+    pauseStart = new Date().getTime() // tesing if pauseStart here stops time
     switch (status) {
         case 'win':
-            document.querySelector('.win-text').style.opacity = "1"
+            document.querySelector('.win-msg').style.opacity = "1"
             break
         case 'lose':
-            document.querySelector('.lose-text').style.opacity = "1"
+            document.querySelector('.lose-msg').style.opacity = "1"
             break
     }
-
 }
 
 
-//starts gameloop
-createAliens()
-startTime = new Date().getTime()
-drawFrame()
-setIntervals()  
+//Starts gameloop
+function startNewGame(keyEvent) {
+    if (keyEvent.key === 'y') {
 
+        gameEnd('lose') // reset
+        scoreCount = 0
+        console.log('!!!!!!!!!!!!!!!!NEW GAME !!!!!!!!!!!!!!')
+        user.style.opacity = '1'
+        user.classList.remove('low-health')
+        createAliens()
+        startTime = new Date().getTime()
+        drawFrame()
+        setIntervals()
 
-document.querySelector('[data-new-game]').addEventListener('click', ()=>{
-    
-})
-
+        gameWindow.classList.remove('game-end')
+        let win = document.querySelector('.win-msg')
+        let lose = document.querySelector('.lose-msg')
+        win.style.opacity = '0'
+        lose.style.opacity = '0'
+    }
+}

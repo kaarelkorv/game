@@ -31,6 +31,7 @@ body {
     position: absolute;
     bottom: 0%;
     left: calc(50% - 20px);
+    opacity: 0;
 }
 
 .bullet {
@@ -92,26 +93,13 @@ body {
     transition: 500ms ease;
 }
 
-.win-text {
-    font-size: 10rem;
+.win-msg, .lose-msg {
     position: absolute;
-    bottom: 20rem;
-    left: 15rem;
-    display: none;
-    color: white;
-}
-
-.lose-text {
-    font-size: 10rem;
-    position: absolute;
-    bottom: 20rem;
-    left: 13rem;
+    bottom: 5rem;
+    left: 5rem;
     display: flex;
     flex-direction: column;
     color: white;
     opacity: 0;
-}
-
-.lose-text button {
-    font-size: 2rem;
+    transition: 500ms ease;
 }
