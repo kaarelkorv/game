@@ -17,6 +17,7 @@ let alienShoot // bottom row of aliens shooting
 let gameTime = 60 // time in seconds
 let alienBulletSpeed = 8
 let level = 0
+let levelsCompleted = 0
 let lives = 2
 
 
@@ -79,7 +80,7 @@ function createAlien(row, col) {
     alien.classList.add('alien')
     alien.classList.add(`row-${row}`)
     alien.style.bottom = 300 + row*60 +'px'
-    alien.style.left = 350 + col*60 +'px'
+    alien.style.left = 550 - level*80 + col*60 +'px'
     gameWindow.appendChild(alien)
 }
 
@@ -112,7 +113,7 @@ function createAlienBullet() {
         alienBullet.classList.add('alien-bullet')
         let shooter = selectShootingAlien()
         if (shooter) {
-            alienBullet.style.left = shooter.style.left
+            alienBullet.style.left = Number(shooter.style.left.replace('px', '')) + 15 + 'px'
             alienBullet.style.bottom = shooter.style.bottom
             gameWindow.appendChild(alienBullet) 
         }
@@ -201,16 +202,12 @@ function checkCollisions() {
                 } else {
                   alien.classList.add('low-health-alien')  
                 }
-  
                 score.innerHTML = `SCORE ${scoreCount}`
+
                 // check for WIN
-                if (scoreCount === alienCount) {
-                    // setTimeout(()=> {
-                    // Object.keys(controller).forEach(key => {
-                    //     controller[key].pressed = false
-                    // })  
+                if (scoreCount === alienCount) { 
                     gameEnd('win')
-                    // }, 500)
+                    levelsCompleted = level + 1
                     return
                 }
             }
@@ -352,13 +349,13 @@ function shoot(){
 
 //---main loop---
 function drawFrame(timeStamp){
-        if (timeStamp) {
+
+    if (timeStamp) {
         let timeDifference = timeStamp - prevFrameTimeStamp
-        if (timeDifference*60 < 1000) {
-            console.log(timeDifference)
-        }
+        console.log(timeDifference)
         prevFrameTimeStamp = timeStamp
     }
+    
     gameOn = requestAnimationFrame(drawFrame)
     //measures and logs time between frames
 
@@ -377,7 +374,7 @@ function drawFrame(timeStamp){
     playTime = new Date().getTime() - startTime - pauseDuration
     
     if (gameTime - Math.floor(playTime/1000) > 0) {
-       timeCounter.textContent = `TIME ${gameTime - Math.floor(playTime/1000)}` 
+       timeCounter.textContent = `TIME ${gameTime - Math.floor(playTime/1000)}s` 
     } else {
         timeCounter.textContent = 'TIMES UP'
         timeCounter.style.background = 'red'
@@ -467,7 +464,7 @@ function startNewGame(keyEvent) {
 
 //Next level
 function nextLevel(keyEvent) {
-    if (keyEvent.key === 'n' && level < 2) {
+    if (keyEvent.key === 'n' && level < 2 && levelsCompleted - 1 === level) {
         level++
         for (let i=0;i<level;i++) {
         alienCount += 6
