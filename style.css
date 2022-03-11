@@ -93,7 +93,8 @@ body {
     transition: 500ms ease;
 }
 
-.win-msg, .lose-msg {
+.win-msg, .lose-msg, .start-msg {
+    font-family: Arial, Helvetica, sans-serif;
     position: absolute;
     bottom: 5rem;
     left: 5rem;
@@ -102,4 +103,13 @@ body {
     color: white;
     opacity: 0;
     transition: 500ms ease;
+}
+
+.start-msg {
+    color: black;
+    opacity: 1;
+}
+
+.p {
+    font-weight: 600;
 }

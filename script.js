@@ -3,8 +3,8 @@ let gameOn
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
-const alienCount = 4
-const alienRows = 4
+let alienCount = 18
+const alienRows = 3
 let scoreCount = 0
 let playTime
 let startTime
@@ -14,8 +14,9 @@ let aliensDirection = true // aliens moving left or right
 let canChangeDirection = false //time of aliens movement from one side to other
 let alienSwing //aliengroup moving back and forth
 let alienShoot // bottom row of aliens shooting
-const gameTime = 60 // time in seconds
-const alienBulletSpeed = 8
+let gameTime = 60 // time in seconds
+let alienBulletSpeed = 8
+let level = 0
 
 
 //Set frame independent intervals:
@@ -23,7 +24,7 @@ function setIntervals() {
     //Aliengroup direction change
     alienSwing = setInterval(() => {
         canChangeDirection = true
-    }, 3000)
+    }, 4000)
 
     //Aliengroup shooting interval
     alienShoot = setInterval(() => {
@@ -57,6 +58,7 @@ const user = document.querySelector('.user')
 document.addEventListener('keydown', (keyEvent) => {
 gamePause(keyEvent)
 startNewGame(keyEvent)
+nextLevel(keyEvent)
 })
 
 
@@ -194,8 +196,6 @@ function checkCollisions() {
                         alien.remove()    
                     }, 500)
                     scoreCount++
-
-
 
                 } else {
                   alien.classList.add('low-health-alien')  
@@ -422,12 +422,13 @@ function gameEnd(status) {
 }
 
 
-//Starts gameloop
+//Starts New Game
 function startNewGame(keyEvent) {
     if (keyEvent.key === 'y') {
-
+        document.querySelector('.start-msg').style.opacity = '0'
         gameEnd('lose') // reset
         scoreCount = 0
+        score.innerHTML = `score ${scoreCount}`
         console.log('!!!!!!!!!!!!!!!!NEW GAME !!!!!!!!!!!!!!')
         user.style.opacity = '1'
         user.classList.remove('low-health')
@@ -442,4 +443,18 @@ function startNewGame(keyEvent) {
         win.style.opacity = '0'
         lose.style.opacity = '0'
     }
+}
+
+//Next level
+function nextLevel(keyEvent) {
+    if (keyEvent.key === 'n') {
+        alienCount += 10
+        alienBulletSpeed +=5
+        gameTime -= 10
+        gameEnd('lose')
+        startNewGame({key: 'y'})
+        level++
+        document.querySelector('.level').innerHTML = `level ${level}`
+    }
+
 }
