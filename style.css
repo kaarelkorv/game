@@ -38,10 +38,9 @@ body {
 .user {
     height: 40px;
     width: 40px;
-    background-color: grey;
+    background-color: rgb(167, 50, 50);
     position: absolute;
-    bottom: 0%;
-    left: calc(50% - 20px);
+    transform: translate(600px, -45px);
     opacity: 0;
 }
 
@@ -51,13 +50,13 @@ body {
     border-radius: 50% 50% 0 0;
     background-image: linear-gradient(white, black);
     position: absolute;
-
+    transform: none;
 }
 
 .alien {
     height: 50px;
     width: 50px;
-    background-color: rgb(104, 104, 104);
+    background-color: rgb(40, 14, 131);
     position: absolute;
 }
 

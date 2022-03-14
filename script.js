@@ -18,9 +18,13 @@ let alienSwing //aliengroup moving back and forth
 let alienShoot
 let gameTime = 60 // time in seconds
 let alienBulletSpeed = 5
+let userBulletSpeed = 9
 let level = 0
 let levelsCompleted = 0
 let lives = 2
+
+
+
 
 //Aliens direction changer
 function alienDirectionChanger() {
@@ -34,7 +38,11 @@ function alienDirectionChanger() {
 const score = document.querySelector('.score')
 const timeCounter = document.querySelector('.timeCounter')
 let gameWindow = document.querySelector('.gameWindow')
+
 const user = document.querySelector('.user')
+let userXposition = 600
+let userYposition = -45
+user.style.transform = `translate(${userXposition}px, ${userYposition}px)`
 
 document.addEventListener('keydown', (keyEvent) => {
 gamePause(keyEvent)
@@ -58,30 +66,24 @@ function createAlien(row, col) {
     const alien = document.createElement('div')
     alien.classList.add('alien')
     alien.classList.add(`row-${row}`)
-    alien.style.bottom = 300 + row*60 +'px'
-    alien.style.left = 550 - level*80 + col*60 +'px'
+    alien.style.transform = `translate(${550 - level*80 + col*60}px, ${-300 - row*60}px)`
     gameWindow.appendChild(alien)
 }
 
 
-//Create new bullet
+//Create new userbullet
 function createBullet() {
     const bullet = document.createElement('div')
     bullet.classList.add('bullet')
-    let userPosition = getComputedStyle(user)
-    let userBottom = userPosition.getPropertyValue('bottom')
-    let userLeft = userPosition.getPropertyValue('left')
-    bullet.style.bottom = Number(userBottom.replace('px', '')) + 15 + 'px'
-    bullet.style.left = Number(userLeft.replace('px', '')) + 15 + 'px'
+    bullet.style.transform = user.style.transform
     gameWindow.appendChild(bullet)
-    
 }
 
 //Select shooting alien(s)
 function selectShootingAlien() {
-    let lowestAliens = document.querySelectorAll('.alien')
-    let random = Math.floor(Math.random()*lowestAliens.length)
-    return lowestAliens[random]
+    let aliveAliens = document.querySelectorAll('.alien')
+    let random = Math.floor(Math.random()*aliveAliens.length)
+    return aliveAliens[random]
 }
 
 
@@ -92,8 +94,7 @@ function createAlienBullet() {
         alienBullet.classList.add('alien-bullet')
         let shooter = selectShootingAlien()
         if (shooter) {
-            alienBullet.style.left = Number(shooter.style.left.replace('px', '')) + 15 + 'px'
-            alienBullet.style.bottom = shooter.style.bottom
+            alienBullet.style.transform = shooter.style.transform
             gameWindow.appendChild(alienBullet) 
         }
  
@@ -104,29 +105,34 @@ function createAlienBullet() {
 function moveBullets() {
     //move user bullets
     let bullets = document.querySelectorAll('.bullet')
-    let currentPostition
+    let currentXposition
+    let currentYposition
     bullets.forEach(bullet => {
-        currentPostition = Number(bullet.style.bottom.replace('px', ''))
-        if (currentPostition > 565) {
+        currentXposition = Number(bullet.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+        currentYposition = Number(bullet.style.transform.split(', ')[1].replace('px)', ''))
+        if (currentYposition < -565) {
             bullet.remove()
         }
         checkCollisions()
-        bullet.style.bottom = currentPostition + 20 + 'px'
+        bullet.style.transform = `translate(${currentXposition}px, ${currentYposition - userBulletSpeed}px)`
     })
 
     //move alien bullets
     let alienBullets = document.querySelectorAll('.alien-bullet')
-    let currentABPostition
+    let currentABXposition
+    let currentABYposition
     alienBullets.forEach(alienBullet => {
-        currentABPostition = Number(alienBullet.style.bottom.replace('px', ''))
-        if (currentABPostition < 0) {
+        currentABXposition = Number(alienBullet.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+        currentABYposition = Number(alienBullet.style.transform.split(', ')[1].replace('px)', ''))
+
+        if (currentABYposition > 0) {
             alienBullet.classList.add('hit-user')
             setTimeout(()=> {
             alienBullet.remove()   
             },300)
         } else {
             checkCollisions()
-            alienBullet.style.bottom = currentABPostition - alienBulletSpeed + 'px'
+            alienBullet.style.transform = `translate(${currentABXposition}px, ${currentABYposition + alienBulletSpeed}px)`
         }
 
     })
@@ -136,15 +142,16 @@ function moveBullets() {
 //Move aliens
 function moveAliens() {
     let aliens = document.querySelectorAll('.alien, .exploding')
-    let currentAlienPostition
+    let currentAlienXposition
+    let currentAlienYposition
     aliens.forEach(alien => {
-        currentAlienPostition = Number(alien.style.left.replace('px', ''))
+        currentAlienXposition = Number(alien.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+        currentAlienYposition = Number(alien.style.transform.split(', ')[1].replace('px)', ''))
         if (aliensDirection) {
-            alien.style.left = currentAlienPostition - 1 + 'px'  
+            alien.style.transform = `translate(${currentAlienXposition - 1}px, ${currentAlienYposition}px)`
         } else {
-            alien.style.left = currentAlienPostition + 1 + 'px'  
+            alien.style.transform = `translate(${currentAlienXposition + 1}px, ${currentAlienYposition}px)` 
         }
-
     })
 
     if (aliensDirection) {
@@ -166,15 +173,15 @@ function checkCollisions() {
     bullets.forEach(bullet => {
         aliens.forEach(alien => {
 
-            let bulletPositionBottom = Number(bullet.style.bottom.replace('px', ''))
-            let bulletPositionLeft = Number(bullet.style.left.replace('px', ''))
-            let alienPositionBottom = Number(alien.style.bottom.replace('px', ''))
-            let alienPositionLeft = Number(alien.style.left.replace('px', ''))
+            let bulletPositionX = Number(bullet.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+            let bulletPositionY = Number(bullet.style.transform.split(', ')[1].replace('px)', ''))
+            let alienPositionX = Number(alien.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+            let alienPositionY = Number(alien.style.transform.split(', ')[1].replace('px)', ''))
 
-            if (bulletPositionLeft > alienPositionLeft &&
-                 bulletPositionLeft < alienPositionLeft + 50 &&
-                  bulletPositionBottom > alienPositionBottom &&
-                   bulletPositionBottom < alienPositionBottom + 50) {
+            if (bulletPositionX > alienPositionX &&
+                 bulletPositionX < alienPositionX + 50 &&
+                  bulletPositionY > alienPositionY &&
+                   bulletPositionY < alienPositionY + 50) {
                 
                 bullet.remove()
                 if (alien.classList.contains('low-health-alien')) {
@@ -205,16 +212,16 @@ function checkCollisions() {
 
     alienBullets.forEach(alienBullet => {
         
-        let alienBulletPositionLeft = Number(alienBullet.style.left.replace('px', ''))
-        let alienBulletPositionBottom = Number(alienBullet.style.bottom.replace('px', ''))
-        let userPositionLeft = Number(user.style.left.replace('px', ''))
-        let userPositionBottom = Number(user.style.bottom.replace('px', ''))
+        let alienBulletPositionX = Number(alienBullet.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+        let alienBulletPositionY = Number(alienBullet.style.transform.split(', ')[1].replace('px)', ''))
+        let userPositionX = Number(user.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+        let userPositionY = Number(user.style.transform.split(', ')[1].replace('px)', ''))
 
 
-            if (alienBulletPositionLeft > userPositionLeft &&
-                 alienBulletPositionLeft < userPositionLeft + 50 &&
-                  alienBulletPositionBottom > userPositionBottom &&
-                   alienBulletPositionBottom < userPositionBottom + 50) {
+            if (alienBulletPositionX > userPositionX &&
+                 alienBulletPositionX < userPositionX + 50 &&
+                  alienBulletPositionY > userPositionY &&
+                   alienBulletPositionY < userPositionY + 40) {
                 
                 alienBullet.classList.remove('alien-bullet')   
                 alienBullet.classList.add('hit-user')
@@ -236,7 +243,7 @@ function checkCollisions() {
 }
 
 
-//Controller TODO: add start and pause!!
+//Controller
 let controller = {
     'ArrowLeft': {
         pressed: false,
@@ -283,36 +290,40 @@ function executeMoves() {
 }
 
 
-//---Controller functions (if needed change to transform: translate() )
+//Controller functions
+
+let userPositionX = Number(user.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
+let userPositionY = Number(user.style.transform.split(', ')[1].replace('px)', ''))
+
 function moveLeft() {
-    let userStyles = window.getComputedStyle(user)
-    let leftValue = Number(userStyles.getPropertyValue('left').replace('px', ''))
-    if (leftValue >= step) {
-       user.style.left = leftValue - step +'px' 
+    if (userXposition >= step) {
+        userXposition -= step
+        user.style.transform = `translate(${userXposition}px, ${userYposition}px` 
     }
+
 }
 function moveRight() {
-    let userStyles = window.getComputedStyle(user)
-    let leftValue = Number(userStyles.getPropertyValue('left').replace('px', ''))
-    if (leftValue <= (gameWidth - step - Number(userStyles.getPropertyValue('width').replace('px', '')))) {
-    user.style.left = leftValue + step + 'px'
+    if (userXposition <= gameWidth - step - 40) {
+        userXposition += step
+        user.style.transform = `translate(${userXposition}px, ${userYposition}px` 
     }
+
 }
 
 function moveUp() {
-    let userStyles = window.getComputedStyle(user)
-    let bottomValue = Number(userStyles.getPropertyValue('bottom').replace('px', ''))
-    if (bottomValue <= (gameHight - Number(userStyles.getPropertyValue('height').replace('px', '')))) {
-    user.style.bottom = bottomValue + step +'px' 
+    if (userYposition >= -gameHight) {
+        userYposition -= step
+        user.style.transform = `translate(${userXposition}px, ${userYposition}px`  
     }
+
 }
 
 function moveDown() {
-    let userStyles = window.getComputedStyle(user)
-    let bottomValue = Number(userStyles.getPropertyValue('bottom').replace('px', ''))
-    if (bottomValue >= step) {
-    user.style.bottom = bottomValue - step + 'px'
+    if (userYposition <= -40 - step) {
+        userYposition += step
+        user.style.transform = `translate(${userXposition}px, ${userYposition}px` 
     }
+
 }
 
 
