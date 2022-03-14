@@ -1,5 +1,5 @@
 body {
-    background-color: grey;
+    background-color: rgb(0, 0, 0);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -33,12 +33,13 @@ body {
     height: 600px;
     width: 1200px;
     position: relative;
+    border-bottom: 1px solid rgb(23, 172, 127);
 }
 
 .user {
     height: 40px;
     width: 40px;
-    background-color: rgb(167, 50, 50);
+    background-color: rgb(23, 172, 127);
     position: absolute;
     transform: translate(600px, -45px);
     opacity: 0;
@@ -48,7 +49,7 @@ body {
     height: 20px;
     width: 10px;
     border-radius: 50% 50% 0 0;
-    background-image: linear-gradient(white, black);
+    background-image: linear-gradient(rgba(255, 255, 255), black);
     position: absolute;
     transform: none;
 }
@@ -56,7 +57,7 @@ body {
 .alien {
     height: 40px;
     width: 40px;
-    background-color: rgb(40, 14, 131);
+    background-color: gray;
     position: absolute;
 }
 
@@ -68,7 +69,7 @@ body {
 .exploding {
     height: 50px;
     width: 50px;
-    border-radius: 50%;
+    border-radius: 50%; 
     box-shadow: 0px 0px 10px 5px rgb(255, 0, 0);
     background-image: radial-gradient(rgb(255, 251, 0), red);
     position: absolute;
@@ -78,13 +79,13 @@ body {
     height: 20px;
     width: 10px;
     border-radius: 0 0 50% 50% ;
-    background-image: linear-gradient(rgb(0, 0, 0), rgb(201, 147, 0));
+    background-image: linear-gradient(rgb(0, 0, 0), white);
     position: absolute;
 }
 
 .low-health {
-    background-image: linear-gradient(red, gray);
-    background-color: none;
+    background-color: transparent;
+    background-image: radial-gradient(rgb(23, 172, 127), rgb(0, 0, 0));
 }
 
 .hit-user {
@@ -124,14 +125,12 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     height: 600px;
     width: 1200px;
-    background-color: rgba(95, 95, 95, 0.445);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: rgb(255, 255, 255);
     opacity: 0;
-    transition: 500ms ease;
 }
 
 .pause-menu h1 {

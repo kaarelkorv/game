@@ -13,12 +13,9 @@ let pauseStart //marks the time when "p" was last hit
 let aliensDirection = true // aliens moving left or right
 
 let alienSwingPosition = 0
-
-let alienSwing //aliengroup moving back and forth
-let alienShoot
 let gameTime = 60 // time in seconds
-let alienBulletSpeed = 3
-let userBulletSpeed = 9
+let alienBulletSpeed = 6
+let userBulletSpeed = 14
 let level = 0
 let levelsCompleted = 0
 let lives = 2
@@ -66,7 +63,7 @@ function createAlien(row, col) {
     const alien = document.createElement('div')
     alien.classList.add('alien')
     alien.classList.add(`row-${row}`)
-    alien.style.transform = `translate(${550 - level*80 + col*60}px, ${-300 - row*60}px)`
+    alien.style.transform = `translate(${500 - (level+level)*50 + col*60}px, ${-320 - row*60}px)`
     gameWindow.appendChild(alien)
 }
 
@@ -125,7 +122,7 @@ function moveBullets() {
         currentABXposition = Number(alienBullet.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
         currentABYposition = Number(alienBullet.style.transform.split(', ')[1].replace('px)', ''))
 
-        if (currentABYposition > 0) {
+        if (currentABYposition > -20) {
             alienBullet.classList.add('hit-user')
             setTimeout(()=> {
             alienBullet.remove()   
@@ -148,9 +145,9 @@ function moveAliens() {
         currentAlienXposition = Number(alien.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
         currentAlienYposition = Number(alien.style.transform.split(', ')[1].replace('px)', ''))
         if (aliensDirection) {
-            alien.style.transform = `translate(${currentAlienXposition - 1}px, ${currentAlienYposition}px)`
+            alien.style.transform = `translate(${currentAlienXposition - level - 1}px, ${currentAlienYposition}px)`
         } else {
-            alien.style.transform = `translate(${currentAlienXposition + 1}px, ${currentAlienYposition}px)` 
+            alien.style.transform = `translate(${currentAlienXposition + level + 1}px, ${currentAlienYposition}px)` 
         }
     })
 
@@ -352,7 +349,7 @@ function drawFrame(timeStamp){
     gameOn = requestAnimationFrame(drawFrame)
 
     //switch alien swing side from left to right to left
-    if (alienSwingPosition === 100 || alienSwingPosition === -100) {
+    if (alienSwingPosition === 50 || alienSwingPosition === -50) {
        alienDirectionChanger()
     } else if (
         alienSwingPosition === 0 ||
@@ -451,6 +448,7 @@ function startNewGame(keyEvent) {
         pauseDuration = 0
         drawFrame()
         aliensDirection = true
+        alienSwingPosition = 0
 
 
         timeCounter.style.background = 'black'
