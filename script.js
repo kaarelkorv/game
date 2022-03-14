@@ -17,7 +17,7 @@ let alienSwingPosition = 0
 let alienSwing //aliengroup moving back and forth
 let alienShoot
 let gameTime = 60 // time in seconds
-let alienBulletSpeed = 5
+let alienBulletSpeed = 3
 let userBulletSpeed = 9
 let level = 0
 let levelsCompleted = 0
@@ -178,10 +178,10 @@ function checkCollisions() {
             let alienPositionX = Number(alien.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
             let alienPositionY = Number(alien.style.transform.split(', ')[1].replace('px)', ''))
 
-            if (bulletPositionX > alienPositionX &&
-                 bulletPositionX < alienPositionX + 50 &&
+            if (bulletPositionX + 5 > alienPositionX &&
+                 bulletPositionX + 5 < alienPositionX + 40 &&
                   bulletPositionY > alienPositionY &&
-                   bulletPositionY < alienPositionY + 50) {
+                   bulletPositionY < alienPositionY + 40) {
                 
                 bullet.remove()
                 if (alien.classList.contains('low-health-alien')) {
@@ -218,9 +218,9 @@ function checkCollisions() {
         let userPositionY = Number(user.style.transform.split(', ')[1].replace('px)', ''))
 
 
-            if (alienBulletPositionX > userPositionX &&
-                 alienBulletPositionX < userPositionX + 50 &&
-                  alienBulletPositionY > userPositionY &&
+            if (alienBulletPositionX + 5 > userPositionX &&
+                 alienBulletPositionX + 5 < userPositionX + 40 &&
+                  alienBulletPositionY + 20 > userPositionY &&
                    alienBulletPositionY < userPositionY + 40) {
                 
                 alienBullet.classList.remove('alien-bullet')   
@@ -335,7 +335,7 @@ function shoot(){
        timer = false
        setTimeout(()=> {
            timer = true
-       }, 200) 
+       }, 400) 
     }
 }
 
@@ -408,6 +408,10 @@ function gamePause(event) {
 //Game end (win or lose)
 function gameEnd(status) {
     console.log("Game ended")
+    if (level === 2) {
+        document.querySelector('.next-level').style.opacity = '0'
+    }
+
     cancelAnimationFrame(gameOn)   
     user.style.opacity = '0'
 
