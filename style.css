@@ -39,17 +39,17 @@ body {
 .user {
     height: 40px;
     width: 40px;
-    background-color: rgb(23, 172, 127);
+    background: url('userplanes.png') 40px 0px;
     position: absolute;
     transform: translate(600px, -45px);
     opacity: 0;
 }
 
 .bullet {
-    height: 20px;
-    width: 10px;
+    height: 12px;
+    width: 8px;
     border-radius: 50% 50% 0 0;
-    background-image: linear-gradient(rgba(255, 255, 255), black);
+    background-image: linear-gradient(rgb(19, 196, 142), black);
     position: absolute;
     transform: none;
 }
@@ -57,18 +57,17 @@ body {
 .alien {
     height: 40px;
     width: 40px;
-    background-color: gray;
+    background: url('alienplanes.png') 0px 0px;
     position: absolute;
 }
 
 .low-health-alien {
-    background-image: linear-gradient(gray, rgb(0, 0, 0));
-    background-color: transparent;
+    background: url('alienplanes.png') 40px 0px;
 }
 
 .exploding {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     border-radius: 50%; 
     box-shadow: 0px 0px 10px 5px rgb(255, 0, 0);
     background-image: radial-gradient(rgb(255, 251, 0), red);
@@ -76,16 +75,15 @@ body {
 }
 
 .alien-bullet {
-    height: 20px;
-    width: 10px;
+    height: 12px;
+    width: 8px;
     border-radius: 0 0 50% 50% ;
-    background-image: linear-gradient(rgb(0, 0, 0), white);
+    background-image: linear-gradient(rgb(0, 0, 0), rgb(148, 30, 30));
     position: absolute;
 }
 
 .low-health {
-    background-color: transparent;
-    background-image: radial-gradient(rgb(23, 172, 127), rgb(0, 0, 0));
+    background: url('userplanes.png') 0px 40px;
 }
 
 .hit-user {
