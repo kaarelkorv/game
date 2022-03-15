@@ -1,5 +1,5 @@
 let prevFrameTimeStamp = 0
-let gameOn = 'stopped'
+let gameOn = -1
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
@@ -393,7 +393,6 @@ function gamePause(event) {
     if (event && event.key === 'p' && playTime !== 0) {
         if (!paused) {
             cancelAnimationFrame(gameOn)
-            gameOn = 'stopped'
             paused = true
             pauseStart = new Date().getTime()
             document.querySelector('.pause-menu').style.opacity = '1'
@@ -416,7 +415,7 @@ function gameEnd(status) {
 
     cancelAnimationFrame(gameOn)
     console.log("GAMEON IS:", gameOn)
-    gameOn = 'stopped'   
+    gameOn = -1   
     user.style.opacity = '0'
 
     document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(object => {
@@ -438,7 +437,7 @@ function gameEnd(status) {
 
 //Starts New Game
 function startNewGame(keyEvent) {
-    if (keyEvent.key === 'y' && gameOn === 'stopped') {
+    if (keyEvent.key === 'y' && gameOn === -1) {
         if (paused) {
             gamePause({key: 'p'})
         }
