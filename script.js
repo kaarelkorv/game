@@ -1,5 +1,5 @@
 let prevFrameTimeStamp = 0
-let gameOn
+let gameOn = 'stopped'
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
@@ -13,7 +13,7 @@ let pauseStart //marks the time when "p" was last hit
 let aliensDirection = true // aliens moving left or right
 
 let alienSwingPosition = 0
-let gameTime = 60 // time in seconds
+let gameTime = 6 // time in seconds
 let alienBulletSpeed = 6
 let userBulletSpeed = 14
 let level = 0
@@ -344,41 +344,47 @@ function drawFrame(timeStamp){
     if (timeStamp) {
         let timeDifference = timeStamp - prevFrameTimeStamp
         prevFrameTimeStamp = timeStamp
+        console.log(timeDifference)
     }
-    
-    gameOn = requestAnimationFrame(drawFrame)
-
-    //switch alien swing side from left to right to left
+    const fps = 60
+    const fpsTimeout = setTimeout(()=>{
+        gameOn = requestAnimationFrame(drawFrame)
+         
+        //switch alien swing side from left to right to left
     if (alienSwingPosition === 50 || alienSwingPosition === -50) {
-       alienDirectionChanger()
-    } else if (
-        alienSwingPosition === 0 ||
-        alienSwingPosition === 75 ||
-        alienSwingPosition === -75) {
-            createAlienBullet()
-    }
+        alienDirectionChanger()
+     } else if (
+         alienSwingPosition === 0 ||
+         alienSwingPosition === 75 ||
+         alienSwingPosition === -75) {
+             createAlienBullet()
+     }
+ 
+     executeMoves()
+     moveAliens()
+     moveBullets()
+ 
+     //display information and check for time up
+     document.querySelector('.level').innerHTML = `LEVEL ${level}`
+     if (lives === 0) {
+ 
+     }
+     document.querySelector('.lives').innerHTML = `LIVES ${lives}`
+ 
+     playTime = new Date().getTime() - startTime - pauseDuration
+     
+     if (gameTime - Math.floor(playTime/1000) > 0) {
+        timeCounter.textContent = `TIME ${gameTime - Math.floor(playTime/1000)}s` 
+     } else {
+         timeCounter.textContent = 'TIMES UP'
+         timeCounter.style.background = 'red'
+         gameEnd('lose') 
+     }
 
-    executeMoves()
-    moveAliens()
-    moveBullets()
 
-    //display information and check for time up
-    document.querySelector('.level').innerHTML = `LEVEL ${level}`
-    if (lives === 0) {
 
-    }
-    document.querySelector('.lives').innerHTML = `LIVES ${lives}`
+    },1000/fps)
 
-    playTime = new Date().getTime() - startTime - pauseDuration
-    
-    if (gameTime - Math.floor(playTime/1000) > 0) {
-       timeCounter.textContent = `TIME ${gameTime - Math.floor(playTime/1000)}s` 
-    } else {
-        timeCounter.textContent = 'TIMES UP'
-        timeCounter.style.background = 'red'
-        gameEnd('lose') 
-    }
-    
 }
 
 
@@ -388,16 +394,16 @@ function gamePause(event) {
     if (event && event.key === 'p' && playTime !== 0) {
         if (!paused) {
             cancelAnimationFrame(gameOn)
+            gameOn = 'stopped'
             paused = true
             pauseStart = new Date().getTime()
             document.querySelector('.pause-menu').style.opacity = '1'
         } else {
-            drawFrame()
             paused = false
             currentPauseDuration = new Date().getTime() - pauseStart
             pauseDuration += currentPauseDuration
             document.querySelector('.pause-menu').style.opacity = '0'
-
+            drawFrame()
         }
     }
 }
@@ -409,7 +415,9 @@ function gameEnd(status) {
         document.querySelector('.next-level').style.opacity = '0'
     }
 
-    cancelAnimationFrame(gameOn)   
+    cancelAnimationFrame(gameOn)
+    console.log("GAMEON IS:", gameOn)
+    gameOn = 'stopped'   
     user.style.opacity = '0'
 
     document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(object => {
@@ -431,7 +439,7 @@ function gameEnd(status) {
 
 //Starts New Game
 function startNewGame(keyEvent) {
-    if (keyEvent.key === 'y') {
+    if (keyEvent.key === 'y' && gameOn === 'stopped') {
         if (paused) {
             gamePause({key: 'p'})
         }
@@ -446,7 +454,7 @@ function startNewGame(keyEvent) {
         user.classList.remove('low-health')
         createAliens()
         pauseDuration = 0
-        drawFrame()
+        
         aliensDirection = true
         alienSwingPosition = 0
 
@@ -459,6 +467,7 @@ function startNewGame(keyEvent) {
         let lose = document.querySelector('.lose-msg')
         win.style.opacity = '0'
         lose.style.opacity = '0'
+        drawFrame()
     }
 }
 
