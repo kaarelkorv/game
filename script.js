@@ -1,5 +1,5 @@
 let prevFrameTimeStamp = 0
-let gameOn = -1
+let gameOn
 const gameWidth = 1200
 const gameHight = 600
 const step = 5
@@ -13,7 +13,7 @@ let pauseStart //marks the time when "p" was last hit
 let aliensDirection = true // aliens moving left or right
 
 let alienSwingPosition = 0
-let gameTime = 6 // time in seconds
+let gameTime = 60 // time in seconds
 let alienBulletSpeed = 6
 let userBulletSpeed = 14
 let level = 0
@@ -347,7 +347,7 @@ function drawFrame(timeStamp){
     }
     const fps = 60
     const fpsTimeout = setTimeout(()=>{
-        gameOn = requestAnimationFrame(drawFrame)
+        
          
         //switch alien swing side from left to right to left
     if (alienSwingPosition === 50 || alienSwingPosition === -50) {
@@ -380,8 +380,9 @@ function drawFrame(timeStamp){
          gameEnd('lose') 
      }
 
-
-
+if (!paused && !gameWindow.classList.contains('game-end')) {
+    gameOn = requestAnimationFrame(drawFrame)
+}
     },1000/fps)
 
 }
@@ -392,8 +393,8 @@ let paused = false
 function gamePause(event) {
     if (event && event.key === 'p' && playTime !== 0) {
         if (!paused) {
-            cancelAnimationFrame(gameOn)
             paused = true
+            cancelAnimationFrame(gameOn)
             pauseStart = new Date().getTime()
             document.querySelector('.pause-menu').style.opacity = '1'
         } else {
@@ -414,8 +415,6 @@ function gameEnd(status) {
     }
 
     cancelAnimationFrame(gameOn)
-    console.log("GAMEON IS:", gameOn)
-    gameOn = -1   
     user.style.opacity = '0'
 
     document.querySelectorAll('.bullet, .alien-bullet, .alien').forEach(object => {
@@ -437,9 +436,14 @@ function gameEnd(status) {
 
 //Starts New Game
 function startNewGame(keyEvent) {
-    if (keyEvent.key === 'y' && gameOn === -1) {
+    if (keyEvent.key === 'y' && paused ||
+     keyEvent.key === 'y' && gameWindow.classList.contains('game-end') || 
+     keyEvent.key === 'y' && gameOn === undefined) {
         if (paused) {
-            gamePause({key: 'p'})
+            paused = false
+            currentPauseDuration = new Date().getTime() - pauseStart
+            pauseDuration += currentPauseDuration
+            document.querySelector('.pause-menu').style.opacity = '0'    
         }
         lives = 2
         document.querySelector('.start-msg').style.opacity = '0'
