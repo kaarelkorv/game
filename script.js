@@ -344,7 +344,6 @@ function drawFrame(timeStamp){
     if (timeStamp) {
         let timeDifference = timeStamp - prevFrameTimeStamp
         prevFrameTimeStamp = timeStamp
-        console.log(timeDifference)
     }
     const fps = 60
     const fpsTimeout = setTimeout(()=>{
