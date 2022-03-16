@@ -2,7 +2,8 @@ let prevFrameTimeStamp = 0
 let gameOn
 const gameWidth = 1200
 const gameHight = 600
-const step = 5
+let timeDifference = 16
+let step = Math.floor(0.3*timeDifference)
 let alienCount = 12
 const alienRows = 3
 let scoreCount = 0
@@ -10,15 +11,18 @@ let playTime = 0
 let startTime
 let pauseDuration = 0
 let pauseStart //marks the time when "p" was last hit
-let aliensDirection = true // aliens moving left or right
 
+let aliensDirection = true // aliens moving left or right
 let alienSwingPosition = 0
+let alienSwingSpeed = 0
+
 let gameTime = 60 // time in seconds
-let alienBulletSpeed = 6
-let userBulletSpeed = 14
+let alienBulletSpeed = 0.4*timeDifference
+let userBulletSpeed = 0.5*timeDifference
 let level = 0
 let levelsCompleted = 0
 let lives = 2
+
 
 
 
@@ -46,6 +50,13 @@ gamePause(keyEvent)
 startNewGame(keyEvent)
 nextLevel(keyEvent)
 })
+
+//Pause game if user leaves tab/window
+document.addEventListener("visibilitychange", ()=> {
+    if (!paused) {
+        gamePause({key: 'p'})
+    }
+});
 
 
 //Create multiple aliens
@@ -145,9 +156,9 @@ function moveAliens() {
         currentAlienXposition = Number(alien.style.transform.split(', ')[0].replace('translate(', '').replace('px', ''))
         currentAlienYposition = Number(alien.style.transform.split(', ')[1].replace('px)', ''))
         if (aliensDirection) {
-            alien.style.transform = `translate(${currentAlienXposition - level - 1}px, ${currentAlienYposition}px)`
+            alien.style.transform = `translate(${currentAlienXposition - level - alienSwingSpeed}px, ${currentAlienYposition}px)`
         } else {
-            alien.style.transform = `translate(${currentAlienXposition + level + 1}px, ${currentAlienYposition}px)` 
+            alien.style.transform = `translate(${currentAlienXposition + level + alienSwingSpeed}px, ${currentAlienYposition}px)` 
         }
     })
 
@@ -339,25 +350,39 @@ function shoot(){
 
 //---main loop---
 function drawFrame(timeStamp){
-
-    //measures and logs time between frames
+gameOn = requestAnimationFrame(drawFrame)
+console.log(gameOn)
+//measures and logs time between printed frames
     if (timeStamp) {
-        let timeDifference = timeStamp - prevFrameTimeStamp
+        timeDifference = timeStamp - prevFrameTimeStamp
         prevFrameTimeStamp = timeStamp
+        console.log("timedifference", timeDifference)
+        console.log("step", step)
+        //update moving speeds relative to player fps
+        step = 0.2*timeDifference
+        alienBulletSpeed = 0.2*timeDifference
+        userBulletSpeed = 0.2*timeDifference
+        alienSwingSpeed = 0.1*timeDifference/2
+        if (alienSwingSpeed > 1.5) {
+            alienSwingSpeed = 1.5
+        }
+        if (alienBulletSpeed > 10) {
+            alienBulletSpeed = 10
+        }
+        if (userBulletSpeed > 10) {
+            userBulletSpeed = 10
+        }
+        console.log(alienSwingSpeed)
     }
-    const fps = 60
-    const fpsTimeout = setTimeout(()=>{
-        
-         
-        //switch alien swing side from left to right to left
+
+    //switch alien swing side from left to right to left
     if (alienSwingPosition === 50 || alienSwingPosition === -50) {
         alienDirectionChanger()
-     } else if (
-         alienSwingPosition === 0 ||
-         alienSwingPosition === 75 ||
-         alienSwingPosition === -75) {
-             createAlienBullet()
-     }
+    } else if (
+        alienSwingPosition === 25 ||
+        alienSwingPosition === -25) {
+        createAlienBullet()
+    }
  
      executeMoves()
      moveAliens()
@@ -380,11 +405,9 @@ function drawFrame(timeStamp){
          gameEnd('lose') 
      }
 
-if (!paused && !gameWindow.classList.contains('game-end')) {
-    gameOn = requestAnimationFrame(drawFrame)
-}
-    },1000/fps)
-
+    
+    
+    
 }
 
 
