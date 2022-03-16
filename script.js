@@ -351,7 +351,6 @@ function shoot(){
 //---main loop---
 function drawFrame(timeStamp){
 gameOn = requestAnimationFrame(drawFrame)
-console.log(gameOn)
 //measures and logs time between printed frames
     if (timeStamp) {
         timeDifference = timeStamp - prevFrameTimeStamp
@@ -359,10 +358,10 @@ console.log(gameOn)
         console.log("timedifference", timeDifference)
         console.log("step", step)
         //update moving speeds relative to player fps
-        step = 0.2*timeDifference
+        step = Math.min(0.2*timeDifference, 5)
         alienBulletSpeed = 0.2*timeDifference
         userBulletSpeed = 0.2*timeDifference
-        alienSwingSpeed = 0.1*timeDifference/2
+        alienSwingSpeed = 0.05*timeDifference
         if (alienSwingSpeed > 1.5) {
             alienSwingSpeed = 1.5
         }
