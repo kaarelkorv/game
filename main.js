@@ -156,11 +156,11 @@ export function gameEnd(status) {
 }
 
 
-//Starts New Game
+//Start new game
 function startNewGame() {
     if (paused || gameWindow.classList.contains('game-end') || frameId === undefined) {
+        //remove pause
         if (paused) {
-            //remove pause
             paused = false
             currentPauseDuration = new Date().getTime() - pauseStart
             totalPauseDuration += currentPauseDuration
