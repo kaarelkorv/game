@@ -55,15 +55,15 @@ const livesCounter = document.querySelector('.lives')
 
 // Listen for any keystroke
 document.addEventListener('keydown', (e) => {
-    switch (e.key) {
+    switch (e.key.toLowerCase()) {
         case 'y':
-            startNewGame(e)
+            startNewGame()
             break
         case 'p':
             gamePause()
             break
         case 'n':
-            nextLevel(e)
+            nextLevel()
             break
     }
 })
@@ -195,7 +195,6 @@ function startNewGame() {
         win.style.opacity = '0'
         lose.style.opacity = '0'
         
-
         drawFrame()
     }
 }
@@ -204,14 +203,12 @@ function startNewGame() {
 function nextLevel() {
     if (level < 2 && levelsCompleted - 1 === level) {
         level++
-        for (let i=0;i<level;i++) {
-        alienCount.increaseCount()
-        alienBulletSpeed.increaseSpeed()
-        assignedGameTime -= 5
-        }
-        gameEnd('lose')
-        startNewGame()
         document.querySelector('.level').innerHTML = `LEVEL ${level}`
+        for (let i = 0; i < level; i++) {
+            alienCount.increaseCount()
+            alienBulletSpeed.increaseSpeed()
+            assignedGameTime -= 5
+        }
+        startNewGame()
     }
-
 }
