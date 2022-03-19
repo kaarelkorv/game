@@ -18,6 +18,7 @@
         <div class="score">SCORE:</div>
         <div class="level">LEVEL: 0</div>
         <div class="lives">LIVES:</div>
+        <div class="total-score">TS: 0</div>
     </div>
 
         <!-- main game-play -->
@@ -33,25 +34,34 @@
         <div class="start-msg">
             <h1>Hello there</h1>
             <div class="p">Move (arrow-keys)</div>
-            <div class="p">Shoot (space)</div>
+            <div class="p">Shoot (s)</div>
             <div class="p">Pause (p)</div>
             <div class="p">Start game (y)</div>
             </div>
 
         <div class="win-msg">
-        <h1>YOU WIN!</h1>
-        <div>Play again (y)</div>
-        <div class="next-level">Next level (n)</div>
+        <h1>LEVEL PASSED!</h1>
+        <div class="next-level">NEXT LEVEL (n)</div>
         </div>
 
         <div class="lose-msg">
-        <h1>YOU LOSE!</h1> 
-        <div>Play again (y)</div>    
+        <h1>GAME OVER!</h1> 
+        <div>Restart (y)</div>    
         </div>
         
         <div class="user"></div>
     </div>
 
+    <dialog class="modal">
+        <h2>
+            HEllo
+        </h2>
+            <input type="text" id="player-name">
+            <input type="button" class="close-modal" value="Send JSON"></button>
+
+
+
+    </dialog>
 
 
     </div>

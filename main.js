@@ -1,4 +1,5 @@
 import { checkCollisions } from './collisions.js'
+import './scoreHandling.js'
 import { 
     moveUserBullets, 
     executeMoves, 
@@ -32,6 +33,8 @@ let assignedGameTime = 60 // time in seconds
 const timeCounter = document.querySelector('.timeCounter')
 let gameDuration = 0
 let startTime
+export let totalAssignedGameTime = 0
+export let timeBonus = 0
 
 //Pause
 let paused = false
@@ -42,11 +45,14 @@ let totalPauseDuration = 0
 //Levels
 export let level = 0
 let levelsCompleted = 0
+const levelCounter = document.querySelector('.level')
 
 //Score
-let scoreCount = 0
-export function increaseScoreCount() { scoreCount++ }
+export let totalScore = 0
+let levelScoreCount = 0
+export function increaseScoreCount() { levelScoreCount++ }
 const scoreCounter = document.querySelector('.score')
+const totalScoreCounter = document.querySelector('.total-score')
 
 //Lives
 let lives = 2
@@ -77,7 +83,7 @@ document.addEventListener("visibilitychange", ()=> {
 
 //Checks if user has won
 function checkForEnd() {
-    if (scoreCount === alienCount.count) {
+    if (levelScoreCount === alienCount.count) {
         gameEnd('win')
         levelsCompleted = level + 1
     }    
@@ -105,17 +111,20 @@ function drawFrame(timeStamp){
     moveAliens()
     alienDirectionChanger()
  
-     scoreCounter.innerHTML = `SCORE ${scoreCount}`
-     livesCounter.innerHTML = `LIVES ${lives}`
-     gameDuration = Math.floor((new Date().getTime() - startTime - totalPauseDuration)/1000)
-     timeCounter.textContent = `TIME ${assignedGameTime - gameDuration}s` 
+ 
+    levelCounter.innerHTML = `LEVEL ${level}`
+    scoreCounter.innerHTML = `SCORE ${levelScoreCount}`
+    livesCounter.innerHTML = `LIVES ${lives}`
+    gameDuration = Math.floor((new Date().getTime() - startTime - totalPauseDuration)/1000)
+    timeCounter.textContent = `TIME ${assignedGameTime - gameDuration}s` 
+    totalScoreCounter.textContent = `TS: ${totalScore + levelScoreCount} (kills: ${totalScore-timeBonus}) (time left over: ${timeBonus})` 
 
     checkForEnd()
 }
 
 //Pause game
 function gamePause() {
-    if (gameDuration !== 0) {
+    if (gameDuration !== 0 && gameDuration !== assignedGameTime && !gameWindow.classList.contains('game-end')) {
         if (!paused) {
             cancelAnimationFrame(frameId)
             paused = true
@@ -134,7 +143,6 @@ function gamePause() {
 //Game end (win or lose)
 export function gameEnd(status) {
     cancelAnimationFrame(frameId)
-
     if (level === 2) {
         document.querySelector('.next-level').style.opacity = '0'
     }
@@ -144,30 +152,45 @@ export function gameEnd(status) {
     })
 
     gameWindow.classList.add('game-end')
-    //pauseStart = new Date().getTime() // tesing if pauseStart here stops time
+    
     switch (status) {
         case 'win':
+            if (level === 2) {
+                scoreCalc()
+                document.querySelector('.modal').showModal()
+            }
             document.querySelector('.win-msg').style.opacity = "1"
             break
         case 'lose':
             document.querySelector('.lose-msg').style.opacity = "1"
             break
     }
+
 }
 
 
 //Start new game
 function startNewGame() {
-    if (paused || gameWindow.classList.contains('game-end') || frameId === undefined) {
-        //remove pause
+    if (paused || gameWindow.classList.contains('game-end') && levelsCompleted <= 2 || frameId === undefined) {
+        //if paused, remove pause
         if (paused) {
             paused = false
             currentPauseDuration = new Date().getTime() - pauseStart
             totalPauseDuration += currentPauseDuration
             document.querySelector('.pause-menu').style.opacity = '0'    
         }
-        
-        gameEnd('lose') // clear table
+        //go to square one
+        if (lives === 0 || gameDuration === assignedGameTime) {
+            level = 0
+            levelsCompleted = 0
+            totalScore = 0
+            alienCount.resetCount()
+            alienBulletSpeed.resetSpeed()
+            assignedGameTime = 60
+            timeBonus = 0
+        }
+
+        lives = 2
 
         //reset aliens
         createAliens()
@@ -177,11 +200,10 @@ function startNewGame() {
         //reset user
         user.style.opacity = '1'
         user.classList.remove('low-health')
-        lives = 2
 
         //reset score
-        scoreCount = 0
-        scoreCounter.innerHTML = `SCORE ${scoreCount}`
+        levelScoreCount = 0
+        scoreCounter.innerHTML = `SCORE ${levelScoreCount}`
 
         //reset time
         startTime = new Date().getTime()
@@ -202,13 +224,20 @@ function startNewGame() {
 //Next level
 function nextLevel() {
     if (level < 2 && levelsCompleted - 1 === level) {
+        scoreCalc()
         level++
         document.querySelector('.level').innerHTML = `LEVEL ${level}`
         for (let i = 0; i < level; i++) {
             alienCount.increaseCount()
             alienBulletSpeed.increaseSpeed()
+            totalAssignedGameTime += assignedGameTime
             assignedGameTime -= 5
         }
         startNewGame()
     }
+}
+
+function scoreCalc() {
+    totalScore += levelScoreCount + assignedGameTime - gameDuration
+    timeBonus += assignedGameTime - gameDuration
 }

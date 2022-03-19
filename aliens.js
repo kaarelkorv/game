@@ -1,14 +1,16 @@
 import { level } from './main.js'
 
-const alienRows = 3
+const alienRows = 1
 export let alienBulletSpeed = {
     speed: 5,
-    increaseSpeed: function() {this.speed += 3}
+    increaseSpeed: function() {this.speed += 3},
+    resetSpeed: function() {this.speed = 5}
 }
 
 export let alienCount = {
-    count: 12,
-    increaseCount: function() {this.count += 6}
+    count: 4,
+    increaseCount: function() {this.count += 2},
+    resetCount: function() {this.count = 4}
 }
 
 export let aliensDirection = {

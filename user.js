@@ -5,8 +5,9 @@ export const user = document.querySelector('.user')
 let userXposition = 600
 let userYposition = -45
 user.style.transform = `translate(${userXposition}px, ${userYposition}px)`
-let userBulletSpeed = 5
-let step = 5
+let userBulletSpeed = 20
+export let bulletsUsed = 0
+let step = 10
 let gameWindow = document.querySelector('.gameWindow')
 
 //Controller for user moves
@@ -27,7 +28,7 @@ let controller = {
         pressed: false,
         func: moveDown
     },
-    ' ': {
+    's': {
         pressed: false,
         func: shoot
     },
@@ -103,6 +104,7 @@ export function moveUserBullets() {
 
 //Create new userbullet
 function createBullet() {
+    bulletsUsed++
     const bullet = document.createElement('div')
     bullet.classList.add('bullet')
     bullet.style.transform = user.style.transform
@@ -117,6 +119,6 @@ export function shoot(){
        timer = false
        setTimeout(()=> {
            timer = true
-       }, 400) 
+       }, 40) 
     }
 }
