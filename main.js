@@ -43,7 +43,7 @@ let currentPauseDuration
 let totalPauseDuration = 0
 
 //Levels
-export let level = 0
+export let level = 2
 let levelsCompleted = 0
 const levelCounter = document.querySelector('.level')
 
@@ -227,12 +227,12 @@ function nextLevel() {
         scoreCalc()
         level++
         document.querySelector('.level').innerHTML = `LEVEL ${level}`
-        for (let i = 0; i < level; i++) {
-            alienCount.increaseCount()
-            alienBulletSpeed.increaseSpeed()
-            totalAssignedGameTime += assignedGameTime
-            assignedGameTime -= 5
-        }
+        // for (let i = 0; i < level; i++) {
+        //     alienCount.increaseCount()
+        //     alienBulletSpeed.increaseSpeed()
+        //     totalAssignedGameTime += assignedGameTime
+        //     assignedGameTime -= 5
+        // }
         startNewGame()
     }
 }

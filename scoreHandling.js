@@ -18,7 +18,25 @@ document.querySelector('.close-modal').addEventListener('click', ()=> {
     }
 
     const playerResultJSON = JSON.stringify(playerResult)
+    getScoreTable(playerResultJSON)
 
     console.log(playerResultJSON)
     dialog.close()  
 })
+
+function getScoreTable (data) {
+    fetch('http://localhost:8080/api', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success',data)
+    })
+    .catch((error) => {
+        console.log('Error', error)
+    })
+
+    //POST request to go API (will save the score and returns fresh lineup)
+
+}
