@@ -14,11 +14,10 @@
 
     <!-- time, score, lives etc. -->
     <div class="gameInfo">
-        <div class="timeCounter">TIME:</div>
-        <div class="score">SCORE:</div>
-        <div class="level">LEVEL: 0</div>
-        <div class="lives">LIVES:</div>
-        <div class="total-score">TS: 0</div>
+        <div class="timeCounter">TIME:  </div>
+        <div class="score">KILLS:  </div>
+        <div class="level">LEVEL:  </div>
+        <div class="lives">LIVES:  </div>
     </div>
 
         <!-- main game-play -->
@@ -53,13 +52,20 @@
     </div>
 
     <dialog class="modal">
+        <form action="#" id="player-form">
         <h3>
-            Good game! Enter your name to save the score.
+            Good effort! Enter your name to save the score & see high-scores.
         </h3>
             <input type="text" id="player-name">
-            <input type="button" class="close-modal" value="Send JSON"></button>
+            <input type="button" class="close-modal" value="Send"></button>
+        </form>
+        <table class="score-table">
+        
 
+        </table>
 
+        <div class="pages-container">
+        </div>
 
     </dialog>
 

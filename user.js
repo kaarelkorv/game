@@ -5,9 +5,9 @@ export const user = document.querySelector('.user')
 let userXposition = 600
 let userYposition = -45
 user.style.transform = `translate(${userXposition}px, ${userYposition}px)`
-let userBulletSpeed = 20
+let userBulletSpeed = 12
 export let bulletsUsed = 0
-let step = 10
+let step = 6
 let gameWindow = document.querySelector('.gameWindow')
 
 //Controller for user moves
@@ -119,6 +119,6 @@ export function shoot(){
        timer = false
        setTimeout(()=> {
            timer = true
-       }, 40) 
+       }, 400) 
     }
 }

@@ -1,9 +1,10 @@
 import { checkCollisions } from './collisions.js'
-import './scoreHandling.js'
+import { clearModal } from './scoreHandling.js'
 import { 
     moveUserBullets, 
     executeMoves, 
-    user } from './user.js'
+    user, 
+    bulletsUsed} from './user.js'
 import { 
     moveAlienBullets,
     moveAliens, 
@@ -33,8 +34,8 @@ let assignedGameTime = 60 // time in seconds
 const timeCounter = document.querySelector('.timeCounter')
 let gameDuration = 0
 let startTime
-export let totalAssignedGameTime = 0
-export let timeBonus = 0
+let timeBonus = 0
+export let totalTimeBonus = 0
 
 //Pause
 let paused = false
@@ -43,7 +44,7 @@ let currentPauseDuration
 let totalPauseDuration = 0
 
 //Levels
-export let level = 2
+export let level = 0
 let levelsCompleted = 0
 const levelCounter = document.querySelector('.level')
 
@@ -63,6 +64,7 @@ const livesCounter = document.querySelector('.lives')
 document.addEventListener('keydown', (e) => {
     switch (e.key.toLowerCase()) {
         case 'y':
+            clearModal()
             startNewGame()
             break
         case 'p':
@@ -89,7 +91,7 @@ function checkForEnd() {
     }    
     if ((assignedGameTime - gameDuration) <= 0) {  
         timeCounter.textContent = 'TIMES UP'
-        timeCounter.style.background = 'red'
+        timeCounter.style.background = "rgb(255, 255, 255, 0.5)"
         gameEnd('lose')
    }
 }
@@ -113,11 +115,10 @@ function drawFrame(timeStamp){
  
  
     levelCounter.innerHTML = `LEVEL ${level}`
-    scoreCounter.innerHTML = `SCORE ${levelScoreCount}`
+    scoreCounter.innerHTML = `KILLS ${levelScoreCount}`
     livesCounter.innerHTML = `LIVES ${lives}`
     gameDuration = Math.floor((new Date().getTime() - startTime - totalPauseDuration)/1000)
-    timeCounter.textContent = `TIME ${assignedGameTime - gameDuration}s` 
-    totalScoreCounter.textContent = `TS: ${totalScore + levelScoreCount} (kills: ${totalScore-timeBonus}) (time left over: ${timeBonus})` 
+    timeCounter.textContent = `TIME ${assignedGameTime - gameDuration} s`
 
     checkForEnd()
 }
@@ -157,15 +158,19 @@ export function gameEnd(status) {
         case 'win':
             if (level === 2) {
                 scoreCalc()
+                totalScore -= bulletsUsed*0.5
                 document.querySelector('.modal').showModal()
             }
             document.querySelector('.win-msg').style.opacity = "1"
             break
         case 'lose':
             document.querySelector('.lose-msg').style.opacity = "1"
+            gameDuration = assignedGameTime
+            scoreCalc()
+            totalScore -= bulletsUsed*0.5
+            document.querySelector('.modal').showModal()
             break
     }
-
 }
 
 
@@ -203,15 +208,15 @@ function startNewGame() {
 
         //reset score
         levelScoreCount = 0
-        scoreCounter.innerHTML = `SCORE ${levelScoreCount}`
+        scoreCounter.innerHTML = `KILLS ${levelScoreCount}`
 
         //reset time
         startTime = new Date().getTime()
         totalPauseDuration = 0
         
         //reset visuals
-        timeCounter.style.background = 'black'
-        document.querySelector('.lives').style.background = 'black'
+        timeCounter.style.background = 'none'
+        document.querySelector('.lives').style.background = 'none'
         gameWindow.classList.remove('game-end')
         document.querySelector('.start-msg').style.opacity = '0'
         win.style.opacity = '0'
@@ -227,17 +232,17 @@ function nextLevel() {
         scoreCalc()
         level++
         document.querySelector('.level').innerHTML = `LEVEL ${level}`
-        // for (let i = 0; i < level; i++) {
-        //     alienCount.increaseCount()
-        //     alienBulletSpeed.increaseSpeed()
-        //     totalAssignedGameTime += assignedGameTime
-        //     assignedGameTime -= 5
-        // }
+        for (let i = 0; i < level; i++) {
+            alienCount.increaseCount()
+            alienBulletSpeed.increaseSpeed()
+            assignedGameTime -= 5
+        }
         startNewGame()
     }
 }
 
 function scoreCalc() {
-    totalScore += levelScoreCount + assignedGameTime - gameDuration
-    timeBonus += assignedGameTime - gameDuration
+    timeBonus = Math.floor((assignedGameTime - gameDuration)*0.5)
+    totalTimeBonus += timeBonus
+    totalScore += levelScoreCount + timeBonus
 }

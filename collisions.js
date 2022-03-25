@@ -61,7 +61,7 @@ export function checkCollisions() {
                     alienBullet.remove()
                 },300)
                 if (user.classList.contains('low-health')) {
-                    document.querySelector('.lives').style.background = 'red'
+                    document.querySelector('.lives').style.background = "rgb(255, 255, 255, 0.5)"
                     gameEnd('lose')
                     return
                 } else {

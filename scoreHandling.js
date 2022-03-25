@@ -1,11 +1,7 @@
-// at game-end prompt player for name and on submit, save this info to an object. convert to JSON and send a POST request to API
-
-//go API service
-//server that when endpoint is accessed, determines if request is POST, if its valid JSON, save to MySQL database
-// if request is GET, return all db as JSON
-
-import { totalScore, timeBonus, totalAssignedGameTime } from './main.js'
+import { totalScore, totalTimeBonus} from './main.js'
 import { bulletsUsed } from './user.js'
+
+let page = 0
 
 const dialog = document.querySelector('.modal')
 document.querySelector('.close-modal').addEventListener('click', ()=> {
@@ -13,30 +9,96 @@ document.querySelector('.close-modal').addEventListener('click', ()=> {
     let playerResult = {
         name: playerName,
         score: totalScore - bulletsUsed*0.1,
-        time: totalAssignedGameTime - timeBonus,
+        time: totalTimeBonus,
         ammo: bulletsUsed
     }
-
+    document.querySelector('#player-form').style.display = "none"
     const playerResultJSON = JSON.stringify(playerResult)
     getScoreTable(playerResultJSON)
-
-    console.log(playerResultJSON)
-    dialog.close()  
+    document.querySelector('.score-table').style.opacity = 1
 })
 
-function getScoreTable (data) {
-    fetch('http://localhost:8080/api', {
+//Post player info to API and recieve updated list in return
+async function getScoreTable (data) {
+    const response = await fetch('http://localhost:8080/api', {
         method: 'POST',
         body: data
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success',data)
-    })
-    .catch((error) => {
-        console.log('Error', error)
-    })
+    const list = await response.json()
+    console.log(list)
+    showScoreTable(list, 0)
+    addPages(list)
+}
 
-    //POST request to go API (will save the score and returns fresh lineup)
+function showScoreTable(list, page) {
+    const scoreTable = document.querySelector('.score-table')
+    scoreTable.childNodes.forEach(child => {child.remove()})
+    scoreTable.innerHTML = `
+    <tr>
+    <th>RANKING</th>
+    <th>NAME</th>
+    <th>SCORE</th>
+    <th>TIMEBONUS</th>
+    <th>USED AMMO</th> 
+    </tr>
+    `
+    list.forEach((element, index) => {
+        if (index >= page*5 && index < page*5 + 5) {
 
+            const score = () => {
+                let nums = (element.score).toString().split('.')
+                if (nums[1] === undefined) {
+                    nums[1] = 0
+                } else {
+                    nums[1] = nums[1].split('').slice(0, 1).join('')
+                }
+
+                return nums[0] + '.' + nums[1]
+            }
+            
+            scoreTable.insertAdjacentHTML("beforeend", 
+            `<tr>
+            <td>${index +1}</td>
+            <td>${element.name}</td>
+            <td>${score()}</td>
+            <td>${element.time}</td>
+            <td>${element.ammo}</td>
+             </tr>`
+            )
+        }
+     });
+}
+
+function addPages(list) {
+    let pageCount = list.length / 5
+    const pagesContainer = document.querySelector('.pages-container')
+    pagesContainer.style.opacity = "1"
+    pagesContainer.style.display = "flex"
+    for (let i=0;i<pageCount;i++) {
+        const nextPage = document.createElement('div')
+        nextPage.classList.add('page-number')
+        nextPage.textContent = `${i}`
+        nextPage.addEventListener('click', ()=> {
+            showScoreTable(list, i)
+            document.querySelectorAll('.page-number').forEach(element => {
+                element.style.transform = "none"
+            })
+            nextPage.style.transform = "scale(1.1)"
+        })
+
+
+        pagesContainer.appendChild(nextPage)
+    }
+
+}
+
+export function clearModal () {
+    dialog.close()
+    page = 0
+    document.querySelector('#player-form').style.display = "block"
+    const table = document.querySelector('.score-table')
+    Array.from(table.children).forEach(child => child.remove())
+    const pagesContainer = document.querySelector('.pages-container')
+    let children = pagesContainer.children
+    Array.from(children).forEach(child => child.remove())
 }

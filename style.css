@@ -1,9 +1,11 @@
 body {
     background-color: rgb(0, 0, 0);
+    background-image: url(art/carbon_fibre.png);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
 }
 .container {
     width: 1200px;
@@ -11,27 +13,29 @@ body {
 }
 
 .gameInfo {
+    padding-block: 1rem;
     display: flex;
-    justify-content: space-around;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 2rem;
+    justify-content: space-between;
+    color: rgb(255, 255, 255);
+    font-size: 1.3rem;
     min-width: 1200px;
 }
 
-.timeCounter, .score, .level, .lives, .total-score {
-    min-width: 25%;
-    text-align: center;
-    background-color: black;
-    font-weight: 100;
-}
+
 
 .gameWindow {
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(17, 17, 17);
     height: 600px;
     width: 1200px;
     position: relative;
-    border-bottom: 1px solid rgb(23, 172, 127);
+    box-shadow: 0 25px 20px -10px rgb(0, 0, 0);
+}
+
+.timeCounter, .score, .level, .lives, .total-score {
+    background: transparent;
+    min-width: 25%;
+    text-align: center;
+    font-weight: 100;
 }
 
 .user {
@@ -49,7 +53,7 @@ body {
     height: 12px;
     width: 8px;
     border-radius: 50% 50% 0 0;
-    background-image: linear-gradient(rgb(19, 196, 142), black);
+    background-image: linear-gradient(rgb(85, 85, 85), black);
     position: absolute;
     transform: none;
 }
@@ -69,17 +73,17 @@ body {
     height: 40px;
     width: 40px;
     border-radius: 50%; 
-    box-shadow: 0px 0px 10px 5px rgb(255, 0, 0);
-    background-image: radial-gradient(rgb(255, 251, 0), red);
+    box-shadow: 0px 0px 10px 5px rgb(86, 183, 228);
+    background-image: radial-gradient(rgb(255, 255, 255), rgb(8, 140, 216));
     position: absolute;
 }
 
 .alien-bullet {
     will-change: transform;
     height: 12px;
-    width: 8px;
+    width: 6px;
     border-radius: 0 0 50% 50% ;
-    background-image: linear-gradient(rgb(0, 0, 0), rgb(148, 30, 30));
+    background-image: linear-gradient(rgb(0, 0, 0), rgb(221, 221, 221));
     position: absolute;
 }
 
@@ -106,8 +110,8 @@ body {
 .win-msg, .lose-msg, .start-msg {
     font-family: Arial, Helvetica, sans-serif;
     position: absolute;
-    bottom: 5rem;
-    left: 5rem;
+    bottom: 250px;
+    left: 500px;
     display: flex;
     flex-direction: column;
     color: white;
@@ -143,9 +147,37 @@ p {
 }
 
 .modal {
-    background-color: white;
-    height: 20vh;
-    width: 50vw;
-    color: rgb(0, 0, 0);
+    background-color: rgba(36, 36, 36, 0.897);
+    color: rgb(255, 255, 255);
     margin: 10vh auto;
+    box-shadow: 0 20px 20px -10px rgba(0, 0, 0, 0.445), 0 0 0 3000px rgba(255, 255, 255, 0.212);
+    border: none;
+    border-radius: 5px;
+}
+
+.score-table {
+    opacity: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.329)
+}
+
+th {
+    padding: 0 3rem;
+    font-size: 0.8rem;
+}
+
+tr {
+    text-align: center;
+    font-weight: 100;
+}
+
+.pages-container {
+    display: none;
+    gap: 1rem;
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+}
+
+.page-number:hover {
+    cursor: pointer;
 }
