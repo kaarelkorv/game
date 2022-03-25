@@ -1,3 +1,1 @@
-make your game 
-===
-oto-tuul  & kaarelk
+My first JS game.
