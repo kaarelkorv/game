@@ -42,7 +42,7 @@ body {
     will-change: transform;
     height: 40px;
     width: 40px;
-    background: url('https://kaarelkorv.github.io/game/art/userplanes.png') 40px 0px;
+    background: url(/art/userplanes.png) 40px 0px;
     position: absolute;
     transform: translate(600px, -45px);
     opacity: 0;
@@ -61,12 +61,12 @@ body {
 .alien {
     height: 40px;
     width: 40px;
-    background: url('https://kaarelkorv.github.io/game/art/alienplanes.png') 0px 0px;
+    background: url(/art/alienplanes.png) 0px 0px;
     position: absolute;
 }
 
 .low-health-alien {
-    background: url('https://kaarelkorv.github.io/game/art/alienplanes.png') 40px 0px;
+    background: url(/art/alienplanes.png) 40px 0px;
 }
 
 .exploding {
@@ -88,7 +88,7 @@ body {
 }
 
 .low-health {
-    background: url('https://kaarelkorv.github.io/game/art/userplanes.png') 0px 40px;
+    background: url(/art/userplanes.png) 0px 40px;
 }
 
 .hit-user {
